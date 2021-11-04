@@ -42,9 +42,7 @@ class Demo_API(unittest.TestCase):
 
         self.result['status_code']= re.status_code
 
-        # print(self.result['data'])
 
-        # print("页面返回信息：%s" % re.content.decode("utf-8"))
         # # 获取excel表格数据的状态码和消息
         readData_code = int(data["status_code"])
 
@@ -64,9 +62,9 @@ class Demo_API(unittest.TestCase):
             print("用例测试结果:  {0}---->{1}".format(data['ID'], NOT_data))
             WriteExcel(setting.TARGET_FILE).write_data(rowNum + 1,NOT_data)
 
-        res=self.assertEqual(self.result['status_code'], readData_code, "返回实际结果是->:%s" % self.result['status_code'])
+        self.assertEqual(self.result['status_code'], readData_code, "返回实际结果是->:%s" % self.result['status_code'])
 
-        res2=self.assertEqual(self.result['data'], readData_body, "返回实际结果是->:%s" % self.result['data'])
+        self.assertEqual(self.result['data'], readData_body, "返回实际结果是->:%s" % self.result['data'])
 
 
 
