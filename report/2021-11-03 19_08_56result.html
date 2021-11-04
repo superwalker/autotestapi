@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>蜜方系统接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+<style type="text/css" media="screen">
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
+table       { font-size: 100%; }
+pre         { }
+
+/* -- heading ---------------------------------------------------------------------- */
+h1 {
+	font-size: 16pt;
+	color: gray;
+}
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.img{
+	width: 100%;
+	height: 100%;
+	border-collapse: collapse;
+    border: 2px solid #777;
+}
+
+.screenshots {
+    z-index: 100;
+	position:absolute;
+	left: 23%;
+	top: 20%;
+	display: none;
+}
+.close_shots {
+	position:absolute;
+	top:0; left:98%;
+	z-index:99;
+	width:20px;
+}
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 800px;
+}
+
+}
+/* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
+#total_row  { font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; font-weight: bold;}
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+.piechart{
+    position:absolute;  ;
+    top:20px;
+    left:350px;
+    width: 200px;
+    float: left;
+    display:  inline;
+}
+
+</style>
+
+</head>
+<body>
+<script language="javascript" type="text/javascript"><!--
+output_list = Array();
+
+/* 增加显示通过分类列表  --YinJia */
+/* level - 0:Summary; 1:Failed; 2:Pass; 3:All */
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level == 2 || level == 0) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level < 2) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+    }
+}
+
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
+            document.getElementById(tid).className = 'hiddenRow';
+        }
+        else {
+            document.getElementById(tid).className = '';
+        }
+    }
+}
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+/* 增加饼图显示  --YinJia */
+function drawCircle(pass, fail, error){
+    var color = ["#6c6","#c60","#c00"];
+    var data = [pass,fail,error];
+    var text_arr = ["pass", "fail", "error"];
+
+    var canvas = document.getElementById("circle");
+    var ctx = canvas.getContext("2d");
+    var startPoint=0;
+    var width = 20, height = 10;
+    var posX = 112 * 2 + 20, posY = 30;
+    var textX = posX + width + 5, textY = posY + 10;
+    for(var i=0;i<data.length;i++){
+        ctx.fillStyle = color[i];
+        ctx.beginPath();
+        ctx.moveTo(112,84);
+        ctx.arc(112,84,84,startPoint,startPoint+Math.PI*2*(data[i]/(data[0]+data[1]+data[2])),false);
+        ctx.fill();
+        startPoint += Math.PI*2*(data[i]/(data[0]+data[1]+data[2]));
+        ctx.fillStyle = color[i];
+        ctx.fillRect(posX, posY + 20 * i, width, height);
+        ctx.moveTo(posX, posY + 20 * i);
+        ctx.font = 'bold 14px';
+        ctx.fillStyle = color[i];
+        var percent = text_arr[i] + ":"+data[i];
+        ctx.fillText(percent, textX, textY + 20 * i);
+
+    }
+}
+
+function show_shots(obj) {
+	obj.nextElementSibling.style.display="block";
+
+}
+
+function close_shots(obj) {
+	obj.parentElement.style.display="none";
+}
+
+
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+<div class="piechart">
+    <div>
+        <canvas id="circle" width="350" height="168" </canvas>
+    </div>
+</div>
+<div class='heading'>
+<h1>蜜方系统接口自动化测试报告</h1>
+<p class='attribute'><strong>测试人员:</strong> walker</p>
+<p class='attribute'><strong>开始时间:</strong> 2021-11-03 19:08:56</p>
+<p class='attribute'><strong>合计耗时:</strong> 0:00:01.234810</p>
+<p class='attribute'><strong>测试结果:</strong> 总共 3 通过 3 通过率 = 100.00%</p>
+
+<p class='description'>环境：windows 10 浏览器：chrome</p>
+</div>
+
+
+
+<p id='show_detail_line'>显示
+<a href='javascript:showCase(0)'>概要</a>
+<a href='javascript:showCase(1)'>失败[0]</a>
+<a href='javascript:showCase(2)'>通过[3]</a>
+<a href='javascript:showCase(3)'>所有[3]</a>
+</p>
+<table id='result_table'>
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row'>
+    <td>用例集/测试用例</td>
+    <td>总计</td>
+    <td>通过</td>
+    <td>失败</td>
+    <td>错误</td>
+    <td>视图</td>
+    <td>错误截图</td>
+</tr>
+
+<tr class='passClass'>
+    <td>testAPI.Demo_API: 蜜方系统</td>
+    <td>2</td>
+    <td>2</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1',2)">详情</a></td>
+    <td>&nbsp;</td>
+</tr>
+
+    <tr id='pt1.1' class='hiddenRow'>
+        <td class='passCase'><div class='testcase'>test_api_1</div></td>
+        <td colspan='5' align='center'>
+
+        <!--css div popup start-->
+        <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1')" >
+            通过</a>
+
+        <div id='div_pt1.1' class="popup_window">
+            <div style='text-align: right; color:red;cursor:pointer'>
+            <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1').style.display = 'none' " >
+               [x]</a>
+            </div>
+            <pre>
+            
+pt1.1: ******* 正在执行用例 -&gt;quest_query_001 *********
+请求方式: post，请求URL: http://mf-backend.lyky.xyz:8188/backend/order/list
+请求参数: {"search":"15835547888","start_time":"","end_time":"","page":1,"limit":10,"shop_id":"","status":""}
+post请求body类型为：json ,body内容为：[{"id": 1357, "shop_id": 27, "shop_name": "安徽德胜大药房-双岗店", "user_drugs_name": "周宇", "card_no": "34240119881231991X", "phone": "15835547888", "diag_id": "21553344682942", "prescription_url": "upload/mf-backend-project/prescription/2021-09-01/95a94b1f9daa014daa04ef3413ae5c3d.png", "status": 4, "remark": "", "created_at": "1630463783", "user_drug": {"id": 378, "order_id": 1357, "name": "周宇", "card_no": "34240119881231991X", "phone": "15835547888", "birthday": "1988-12-31", "sex": 1, "age": 33, "address": "hsajijwhhyjjm", "is_diagnosis": 0, "is_allergy": 0, "is_taboo": 1, "is_adverse": 0, "created_at": "1630463783"}, "disease": [{"order_id": 1357, "disease_id": "97648", "disease_name": "中耳炎"}]}]
+用例测试结果:  quest_query_001----&gt;PASS
+
+
+            </pre>
+        </div>
+        <!--css div popup end-->
+    </td>
+    <td></td>
+</tr>
+
+    <tr id='pt1.2' class='hiddenRow'>
+        <td class='passCase'><div class='testcase'>test_api_2</div></td>
+        <td colspan='5' align='center'>
+
+        <!--css div popup start-->
+        <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.2')" >
+            通过</a>
+
+        <div id='div_pt1.2' class="popup_window">
+            <div style='text-align: right; color:red;cursor:pointer'>
+            <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.2').style.display = 'none' " >
+               [x]</a>
+            </div>
+            <pre>
+            
+pt1.2: ******* 正在执行用例 -&gt;quest_query_002 *********
+请求方式: post，请求URL: http://mf-backend.lyky.xyz:8188/backend/order/list
+请求参数: {"search":"","start_time":"","end_time":"","page":1,"limit":10,"shop_id":"","status":3}
+post请求body类型为：json ,body内容为：[{"id":1355,"shop_id":27,"shop_name":"安徽德胜大药房-双岗店","user_drugs_name":"马一鸣","card_no":"110105198010215419","phone":"13756213086","diag_id":"21545315652261","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629776345","user_drug":{"id":376,"order_id":1355,"name":"马一鸣","card_no":"110105198010215419","phone":"13756213086","birthday":"1980-10-21","sex":1,"age":41,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629776345"},"disease":[{"order_id":1355,"disease_id":"12565","disease_name":"骨质增生"}]},{"id":1353,"shop_id":27,"shop_name":"安徽德胜大药房-双岗店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21545315652253","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629775454","user_drug":{"id":374,"order_id":1353,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"合肥蜀山区南湖春城1802号","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629775454"},"disease":[{"order_id":1353,"disease_id":"12565","disease_name":"骨质增生"}]},{"id":1352,"shop_id":27,"shop_name":"安徽德胜大药房-双岗店","user_drugs_name":"马一鸣","card_no":"110105198010215419","phone":"17721329876","diag_id":"21545315711446","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629774360","user_drug":{"id":373,"order_id":1352,"name":"马一鸣","card_no":"110105198010215419","phone":"17721329876","birthday":"1980-10-21","sex":1,"age":41,"address":"隆河新村3栋301","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629774360"},"disease":[{"order_id":1352,"disease_id":"12565","disease_name":"骨质增生"}]},{"id":1350,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"余龙艳","card_no":"342901198907176648","phone":"18155458989","diag_id":"21545315771410","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629773729","user_drug":{"id":371,"order_id":1350,"name":"余龙艳","card_no":"342901198907176648","phone":"18155458989","birthday":"1989-07-17","sex":2,"age":32,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629773729"},"disease":[{"order_id":1350,"disease_id":"16331","disease_name":"头痛"}]},{"id":1347,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21539310179622","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629274810","user_drug":{"id":368,"order_id":1347,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629274810"},"disease":[{"order_id":1347,"disease_id":"96113","disease_name":"神经性头痛"}]},{"id":1344,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21539308142085","prescription_url":"upload/mf-backend-project/prescription/2021-08-18/b87f7563f205f2bf1d3ec296cd23f3bd.png","status":3,"remark":"互联网医院结束问诊","created_at":"1629267078","user_drug":{"id":365,"order_id":1344,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629267078"},"disease":[{"order_id":1344,"disease_id":"96143","disease_name":"失眠"}]},{"id":1343,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21539308080057","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629252986","user_drug":{"id":364,"order_id":1343,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629252986"},"disease":[{"order_id":1343,"disease_id":"99540","disease_name":"消化不良"}]},{"id":1342,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21539304628334","prescription_url":"","status":3,"remark":"不对症","created_at":"1629252921","user_drug":{"id":363,"order_id":1342,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629252921"},"disease":[{"order_id":1342,"disease_id":"27853","disease_name":"风邪外袭证"}]},{"id":1341,"shop_id":6,"shop_name":"德胜测试门店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21539307862538","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629252854","user_drug":{"id":362,"order_id":1341,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629252854"},"disease":[{"order_id":1341,"disease_id":"8987","disease_name":"感冒"},{"order_id":1341,"disease_id":"98487","disease_name":"急性咽喉痛"}]},{"id":1340,"shop_id":27,"shop_name":"安徽德胜大药房-双岗店","user_drugs_name":"王波","card_no":"341125199308041451","phone":"18155458947","diag_id":"21538307862410","prescription_url":"","status":3,"remark":"24小时未接诊，系统自动拒诊","created_at":"1629200226","user_drug":{"id":361,"order_id":1340,"name":"王波","card_no":"341125199308041451","phone":"18155458947","birthday":"1993-08-04","sex":1,"age":28,"address":"","is_diagnosis":1,"is_allergy":0,"is_taboo":1,"is_adverse":0,"created_at":"1629200226"},"disease":[{"order_id":1340,"disease_id":"8987","disease_name":"感冒"}]}]
+用例测试结果:  quest_query_002----&gt;PASS
+
+
+            </pre>
+        </div>
+        <!--css div popup end-->
+    </td>
+    <td></td>
+</tr>
+
+<tr class='passClass'>
+    <td>testMfPharmacistAPI.Demo_API: 蜜方系统</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c2',1)">详情</a></td>
+    <td>&nbsp;</td>
+</tr>
+
+    <tr id='pt2.1' class='hiddenRow'>
+        <td class='passCase'><div class='testcase'>test_api_1</div></td>
+        <td colspan='5' align='center'>
+
+        <!--css div popup start-->
+        <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt2.1')" >
+            通过</a>
+
+        <div id='div_pt2.1' class="popup_window">
+            <div style='text-align: right; color:red;cursor:pointer'>
+            <a onfocus='this.blur();' onclick="document.getElementById('div_pt2.1').style.display = 'none' " >
+               [x]</a>
+            </div>
+            <pre>
+            
+pt2.1: ******* 正在执行用例 -&gt;quest_query_001 *********
+请求方式: post，请求URL: http://mf-backend.lyky.xyz:8188/backend/merchant_pharmacist/info
+请求参数: 
+post请求body类型为：json ,body内容为：{"id":1,"merchant_id":31,"admin_id":31,"name":"wangbo1","card_no":"341125199308040001","register_no":"ZC202108171434","qualification_no":"ZG202108171434","company_name":"德胜连盟大药房","register_url":"upload/mf-backend-project/file/2021-08-30/174aeb0e8ac5047b3a78fbcc6450ed48.jpg","qualification_url":"upload/mf-backend-project/file/2021-09-01/a53b11cd775b4b6f98c58c787787177b.jpg","sign_url":"upload/mf-backend-project/file/2021-08-24/63a537b76c6f4301a5194629c444ec16.png","created_at":"2021-08-17 14:48:00","updated_at":"2021-09-23 16:40:10"}
+用例测试结果:  quest_query_001----&gt;PASS
+
+
+            </pre>
+        </div>
+        <!--css div popup end-->
+    </td>
+    <td></td>
+</tr>
+
+<tr id='total_row'>
+    <td>总计</td>
+    <td>3</td>
+    <td>3</td>
+    <td>0</td>
+    <td>0</td>
+	<td>通过率：100.00%</td>
+	<td>&nbsp;</td>
+</tr>
+</table>
+<script>
+    drawCircle(3, 0, 0)
+</script>
+
+<div id='ending'>&nbsp;</div>
+
+</body>
+</html>
