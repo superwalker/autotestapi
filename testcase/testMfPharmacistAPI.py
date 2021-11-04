@@ -3,6 +3,9 @@
 __author__ = 'walker'
 
 import os,sys
+
+from config.setting import BASE_DIR
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import unittest,requests,ddt
 from config import setting
@@ -15,6 +18,7 @@ import warnings
 testdata =os.path.join(setting.SOURCE_CONFIG,"DemoPharmacistAPITestCase.xlsx")
 testData = ReadExcel(testdata, "Sheet1").read_data()
 # print(testData)
+TARGET_FILE = os.path.join(BASE_DIR,"report","excelReport","DemoPharmacistAPITestCase.xlsx")
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
@@ -29,7 +33,7 @@ class Demo_API(unittest.TestCase):
     @ddt.data(*testData)
     def test_api(self,data):
         # 获取ID字段数值，截取结尾数字并去掉开头0
-        # rowNum = int(data['ID'].split("_")[2])
+        rowNum = int(data['ID'].split("_")[2])
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
         print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
         print("请求参数: {0}".format(data['params']))
@@ -58,11 +62,11 @@ class Demo_API(unittest.TestCase):
         if readData_code == status_code and readData_body == self.result:
             OK_data = "PASS"
             print("用例测试结果:  {0}---->{1}".format(data['ID'],OK_data))
-            # WriteExcel(setting.TARGET_FILE).write_data(rowNum + 1,OK_data)
+            WriteExcel(TARGET_FILE).write_data(rowNum + 1,OK_data)
         if readData_code != status_code or readData_body != self.result:
             NOT_data = "FAIL"
             print("用例测试结果:  {0}---->{1}".format(data['ID'], NOT_data))
-            # WriteExcel(setting.TARGET_FILE).write_data(rowNum + 1,NOT_data)
+            WriteExcel(TARGET_FILE).write_data(rowNum + 1,NOT_data)
 
         res=self.assertEqual(status_code, readData_code, "返回实际结果是->:%s" % status_code)
 
