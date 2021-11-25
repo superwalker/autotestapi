@@ -3,8 +3,8 @@
 __author__ = 'YinJia'
 
 import os,sys,json
-# import token
-from lib.token import get_token
+
+
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -15,13 +15,11 @@ class SendRequests():
     def sendRequests(self,s,apiData):
         try:
             #从读取的表格中获取响应的参数作为传递
-            token = "Bearer  " + get_token()
+
             method = apiData["method"]
             url = apiData["url"]
 
-            h ={
-                'Authorization':token
-            }
+
 
             if apiData["params"] == "":
                 par = None
@@ -50,8 +48,8 @@ class SendRequests():
             else:
                 body = body_data
 
-            #发送请求
-            re = s.request(method=method,url=url,headers=h,params=par,data=body,verify=v)
+            #发送请求 data=body
+            re = s.request(method=method,url=url,params=par,verify=v)
             return re
         except Exception as e:
             print(e)
