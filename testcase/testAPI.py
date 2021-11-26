@@ -37,7 +37,7 @@ class Demo_API(unittest.TestCase):
         # 获取ID字段数值，截取结尾数字并去掉开头0
         rowNum = int(data['ID'].split("_")[1])
         # 修改测试报告用例名称
-        print(__name__)
+
         self._testMethodName = data['ID'] + ':' + data['UseCase']
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
         print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
