@@ -11,17 +11,23 @@ from lib.sendrequests import SendRequests
 from lib.writeexcel import WriteExcel
 import json
 import warnings
-
+from lib.GetToken import get_token
 
 testData = ReadExcel(setting.SOURCE_FILE, "Sheet1").read_data()
-# print(testData)
+# print(type(testData))
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
-    """蜜方系统"""
+    """蜜方系统-处方记录列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
+
+        token = "Bearer  " + get_token()
+        h = {
+            'Authorization': token
+        }
         self.s = requests.session()
+        self.s.headers.update(h)
 
     def tearDown(self):
         pass
@@ -29,15 +35,21 @@ class Demo_API(unittest.TestCase):
     @ddt.data(*testData)
     def test_api(self,data):
         # 获取ID字段数值，截取结尾数字并去掉开头0
-        rowNum = int(data['ID'].split("_")[2])
+        rowNum = int(data['ID'].split("_")[1])
+        # 修改测试报告用例名称
+        print(__name__)
+        self._testMethodName = data['ID'] + ':' + data['UseCase']
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
         print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
         print("请求参数: {0}".format(data['params']))
         print("post请求body类型为：{0} ,body内容为：{1}".format(data['type'], data['body']))
         # 发送请求
         re = SendRequests().sendRequests(self.s,data)
+        print(re)
         # 获取服务端返回的值
+        # print(type(re))
 
+        # 将结果进行反序列化
         self.result = re.json()
 
         self.result['status_code']= re.status_code
@@ -69,4 +81,5 @@ class Demo_API(unittest.TestCase):
 
 
 if __name__=='__main__':
+
     unittest.main()
