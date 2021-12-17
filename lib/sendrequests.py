@@ -50,6 +50,8 @@ class SendRequests():
 
             #发送请求 data=body
             re = s.request(method=method,url=url,params=par,verify=v)
+            re.elapsed.total_seconds()
+
             return re
         except Exception as e:
             print(e)

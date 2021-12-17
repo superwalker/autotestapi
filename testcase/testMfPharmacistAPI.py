@@ -3,7 +3,6 @@
 __author__ = 'walker'
 
 import os,sys
-
 from config.setting import BASE_DIR
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import unittest,requests,ddt
@@ -46,7 +45,8 @@ class Demo_API(unittest.TestCase):
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
         print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
         print("请求参数: {0}".format(data['params']))
-        print("post请求body类型为：{0} ,body内容为：{1}".format(data['type'], data['body']))
+        # print("post请求body类型为：{0} ,body内容为：{1}".format(data['type'], data['body']))
+        print(("post请求body类型为：{0}".format(data['type'])))
         # 发送请求
         re = SendRequests().sendRequests(self.s,data)
         # 获取服务端返回的值
@@ -54,7 +54,6 @@ class Demo_API(unittest.TestCase):
         self.result = re.json()
 
         status_code= re.status_code
-
 
         # # 获取excel表格数据的状态码和消息
         readData_code = int(data["status_code"])
