@@ -20,7 +20,7 @@ TEST_REPORT = os.path.join(BASE_DIR,"report")
 TEST_CASE = os.path.join(BASE_DIR,"testcase")
 
 # 统一账号登录页地址
-LOGIN_URL = "http://cas-backend.lyky.xyz/auth/login"
+LOGIN_URL = "http://cas-backend.lyky.xyz:8188/auth/login"
 # 统一账号
 LOGIN_ACCOUNT = "ahdsdyf"
 # 统一账号密码
@@ -28,6 +28,6 @@ LOGIN_PWD = 12345678
 # 统一账号的应用的appid
 LOGIN_APPID = 258634629320884225
 #获取token地址
-LOGIN_TOKEN_URL="http://mf-backend.lyky.xyz/backend/auth/login"
+LOGIN_TOKEN_URL="http://mf-backend.lyky.xyz:8188/backend/auth/login"
 
 

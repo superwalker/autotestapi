@@ -45,12 +45,69 @@ class DB:
         :param table_name:清除数据的表名
         '''
         real_sql = "delete from " + table_name + ";"
-        with self.conn.cursor() as cursor:
-             # 取消表的外键约束
-            cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
-            cursor.execute(real_sql)
-        self.conn.commit()
-        self.close()
+        try:
+            with self.conn.cursor() as cursor:
+                 # 取消表的外键约束
+                cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
+                cursor.execute(real_sql)
+            self.conn.commit()
+        except Exception as e:
+            print("清除{0}表报错，报错信息如下：{1}".format(table_name,e))
+
+        # 清除表数据
+
+    # 删除表数据
+    def delete(self, table_name,where_datas):
+        '''
+        :notes:删除表数据，无返回
+        :param table_name:更新数据的表名
+        :param where_datas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+        '''
+        # 按照传入的条件拼接sql语句
+        real_sql = "delete  from " + table_name + ";"
+        if where_datas:
+            selectcondition = ''
+            for key in where_datas:
+                selectcondition = selectcondition + key + '=' + "'" + where_datas[key] + "'" + ' AND '
+            selectcondition = selectcondition.rstrip(' AND ')
+            real_sql = "delete  from " + table_name + " WHERE "+selectcondition+";"
+        # 执行sql语句
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(real_sql)
+            self.conn.commit()
+        except Exception as e:
+            print("删除{0}表报错，报错信息如下：{1}".format(table_name,e))
+
+    # 更新表数据
+    def update(self, table_name, set_data,where_datas):
+        '''
+        :notes:更新表数据，无返回
+        :param table_name:更新数据的表名
+        :param set_data:更新表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+        :param where_datas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+        '''
+        setcondition=''
+        # 按照传入的条件拼接sql语句
+        for key in set_data:
+            setcondition = setcondition + key + '=' + "'" + set_data[key] + "'" + ' , '
+        setcondition=setcondition.rstrip(' , ')
+
+        searchcondition=''
+        if where_datas:
+            for key in where_datas:
+                searchcondition =searchcondition + key + '=' + "'" + where_datas[key] + "'" + ' AND '
+            searchcondition = searchcondition.rstrip(' AND ')
+            real_sql = "update " + table_name + " set "+setcondition+" WHERE " + searchcondition + ";"
+        else:
+            real_sql = "update " + table_name + " set "+setcondition+ ";"
+        # 执行sql语句
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(real_sql)
+            self.conn.commit()
+        except Exception as e:
+            print("更新{0}表报错，报错信息如下：{1}".format(table_name,e))
 
     # 插入表数据
     def insert(self, table_name, table_data):
@@ -64,55 +121,98 @@ class DB:
         key   = ','.join(table_data.keys())
         value = ','.join(table_data.values())
         real_sql = "INSERT INTO " + table_name + " (" + key + ") VALUES (" + value + ")"
-        with self.conn.cursor() as cursor:
-            cursor.execute(real_sql)
-        self.conn.commit()
-        self.close()
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(real_sql)
+            self.conn.commit()
+        except Exception as e:
+            print("新增{0}表报错，报错信息如下：{1}".format(table_name,e))
 
     #精确查询表数据
-    def exactselect(self,table_name,table_data,sortdesc):
+    def exactselect(self,table_name,select_datas,**keys):
         '''
-        :notes:精确查询表数据，获取排序后的结果
+        :notes:接口返回的字段与数据库按照查询条件查询返回数据一致
         :author：yulongyan
-        :date:2021-11-09
+        :date:2021-11-23
         :param table_name:查询数据的表名
-        :param table_data:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
-        :param sortdesc:查询数据的排序字段，按照字段的逆序排序
-        :return:返回查询表数据的结果，返回数据类型为列表
+        :param selectdatas:查询的表的属性值，格式为list，例:['name','id'],查询的sql语言类似于select id,name XXX
+        :param **keys可变参数
+               where_datas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+               sortkeydesc:查询的表数据排序字段，按照该字段逆序排序
+               limitcounts:查询的表数据返回的条数
+        :return:接口返回的字段与数据库按照查询条件查询返回数据一致则返回TRUE,不一致返回FALSE
         '''
-        selectsql=""
-        for key in table_data:
-            table_data[key] = "'"+str(table_data[key])+"'"
-            selectsql=selectsql+key+" = "+table_data[key]+" AND "
-        selectsql=selectsql.rstrip(' AND ')
-        real_sql = "SELECT * FROM " + table_name +" WHERE " + selectsql+" ORDER BY "+sortdesc+" DESC"
-        with self.conn.cursor() as cursor:
-            cursor.execute(real_sql)
-        self.conn.commit()
-        self.close()
+        #按照传入的查询条件拼接sql语句
+        selectcondition=""
+        selectparam=''
+        for data in select_datas:
+            selectparam = data + ',' + selectparam
+        selectparam = selectparam.rstrip(' , ')
+        selectsql = 'SELECT ' + selectparam + ' FROM ' + table_name
+        for key in keys:
+            if key=='where_datas':
+                for k in keys[key]:
+                    selectcondition = selectcondition + k + '=' + "'" + keys[key][k] + "'" + ' AND '
+                # for k,v in keys:
+                #     selectcondition=selectcondition + k + '=' + "'" + v + "'" + ' AND '
+                selectcondition = selectcondition.rstrip(' AND ')
+                selectsql = selectsql + ' WHERE ' + selectcondition
+            if key=="sortkeydesc":
+                selectsql=selectsql+' ORDER BY '+keys[key]
+            if key=="limitcounts":
+                selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+        # 执行sql语句
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(selectsql)
+            self.conn.commit()
+        except Exception as e:
+            print("精准查询{0}表报错，报错信息如下：{1}".format(table_name,e))
         return cursor.fetchall()
 
     #模糊查询表数据
-    def dimselect(self,table_name,table_data,sortdesc):
+    def dimselect(self,table_name,select_datas,**keys):
         '''
-        :notes:模糊查询表数据，获取排序后的结果
+        :notes:接口返回的字段与数据库按照查询条件查询返回数据一致
         :author：yulongyan
-        :date:2021-11-09
+        :date:2021-11-23
         :param table_name:查询数据的表名
-        :param table_data:模糊查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
-        :param sortdesc:查询数据的排序字段，按照字段的逆序排序
-        :return:返回模糊查询表数据的结果，返回数据类型为列表
+        :param selectdatas:查询的表的属性值，格式为list，例:['name','id'],查询的sql语言类似于select id,name XXX
+        :param **keys可变参数
+               searchdatas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+               sortkeydesc:查询的表数据排序字段，按照该字段逆序排序
+               limitcounts:查询的表数据返回的条数
+        :return:接口返回的字段与数据库按照查询条件查询返回数据一致则返回TRUE,不一致返回FALSE
         '''
-        selectsql=""
-        for key in table_data:
-            selectsql=selectsql+key+" like '%"+table_data[key]+"%' AND "
-        selectsql=selectsql.rstrip(' AND ')
-        real_sql = "SELECT * FROM " + table_name +" WHERE " + selectsql+" ORDER BY "+sortdesc+" DESC"
-        with self.conn.cursor() as cursor:
-            cursor.execute(real_sql)
-        self.conn.commit()
-        self.close()
+        #按照传入的查询条件拼接sql语句
+        selectcondition=""
+        selectparam=''
+        for data in select_datas:
+            selectparam = data + ',' + selectparam
+        selectparam = selectparam.rstrip(' , ')
+        selectsql = 'SELECT ' + selectparam + ' FROM ' + table_name
+        for key in keys:
+            if key=='where_datas':
+                for k in keys[key]:
+                    selectcondition = selectcondition + k + ' like ' + "'%" + keys[key][k] + "%'" + ' AND '
+                # for k,v in keys:
+                #     selectcondition=selectcondition + k + ' like ' + "'%" + v + "%'" + ' AND '
+                selectcondition = selectcondition.rstrip(' AND ')
+                selectsql = selectsql + ' WHERE ' + selectcondition
+            if key=="sortkeydesc":
+                selectsql=selectsql+' ORDER BY '+keys[key]
+            if key=="limitcounts":
+                selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+        # 执行sql语句
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(selectsql)
+            self.conn.commit()
+        except Exception as e:
+            print("模糊查询{0}表报错，报错信息如下：{1}".format(table_name,e))
         return cursor.fetchall()
+
+
 
     # 执行sql语句
     def executesql(self,sql):
@@ -123,10 +223,12 @@ class DB:
         :param sql:执行的sql语句
         :return:返回sql执行后返回的结果，返回数据类型为列表
         """
-        with self.conn.cursor() as cursor:
-            cursor.execute(sql)
-        self.conn.commit()
-        self.close()
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql)
+            self.conn.commit()
+        except Exception as e:
+            print("执行sql语句，报错信息如下：{0}".format(e))
         return cursor.fetchall()
 
     # 关闭数据库
@@ -142,21 +244,8 @@ class DB:
         for table, data in datas.items():
             self.clear(table)
             for d in data:
-                self.insert(table, d)
+                try:
+                    self.insert(table, d)
+                except Exception as e:
+                    print("{0}表，初始化数据，报错信息如下：{1}".format(table, e))
         self.close()
-
-
-
-if __name__ == '__main__':
-    tabledata={"name":"测试门店","status":"1"}
-    result=DB().exactselect("mf_shop",tabledata,"id")
-    print(result)
-
-    # tabledata={"name":"测试"}
-    # result=DB().dimselect("mf_shop",tabledata,"id")
-    # print(result)
-
-    # result = DB().executesql("select * from mf_shop limit 10")
-    # print(result)
-
-

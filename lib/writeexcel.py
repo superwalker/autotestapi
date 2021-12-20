@@ -51,3 +51,29 @@ class WriteExcel():
         self.ws[M_n].font = font1
         self.ws[M_n].alignment = align
         self.wb.save(self.filename)
+
+    def write_data(self, row, column, value, way=None):
+        """
+        向excel中写入值
+
+        :author: 王波
+        :param row: 单元格行数，从1开始，int类型
+        :param column: 单元格列数，从1开始，int类型
+        :param value: 写入单元格中的值
+        :param way: 写入单元格中的方式，way=None，表示默认操作，覆盖原来单元格中的值；way=append，表示追加
+        :return:
+        """
+        str_value = str(value)
+        if way:
+            self.ws.cell(row, column, str_value)
+        else:
+            old_cell_value = self.ws.cell(row, column).value + "\n" + str_value
+            self.ws.cell(row, column, old_cell_value)
+        self.wb.save(self.filename)
+
+
+if __name__ == "__main__":
+    fileName = "../report/excelReport/DemoPharmacistAPITestCase.xlsx"
+    print(openpyxl.__version__)
+    we = WriteExcel(fileName)
+    we.write_data(2, 12, "hi zhouyu")

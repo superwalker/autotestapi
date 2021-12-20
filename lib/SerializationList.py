@@ -60,9 +60,3 @@ class SerializationList:
         return  reulist
 
 
-# com={'id:1', 'address:地区'}
-# com2={'id:2', 'address:地区2'}
-#
-# z=SerializationList()
-# # print(z.set_key(char,char1))
-# print(z.set_list(com))
