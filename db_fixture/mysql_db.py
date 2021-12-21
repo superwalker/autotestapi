@@ -153,8 +153,7 @@ class DB:
             if key=='where_datas':
                 for k in keys[key]:
                     selectcondition = selectcondition + k + '=' + "'" + keys[key][k] + "'" + ' AND '
-                # for k,v in keys:
-                #     selectcondition=selectcondition + k + '=' + "'" + v + "'" + ' AND '
+
                 selectcondition = selectcondition.rstrip(' AND ')
                 selectsql = selectsql + ' WHERE ' + selectcondition
             if key=="sortkeydesc":
@@ -249,3 +248,98 @@ class DB:
                 except Exception as e:
                     print("{0}表，初始化数据，报错信息如下：{1}".format(table, e))
         self.close()
+
+
+
+    #模糊查询表数据
+    def MultiQuery(self,table_name,select_datas,**keys):
+        '''
+        :notes:接口返回的字段与数据库按照查询条件查询返回数据一致
+        :author：zhouyu
+        :date:2021-12-21
+        :param table_name:查询数据的表名
+        :param selectdatas:查询的表的属性值，格式为list，例:['name','id'],查询的sql语言类似于select id,name XXX
+        :param **keys可变参数
+               searchdatas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
+               sortkeydesc:查询的表数据排序字段，按照该字段逆序排序
+               limitcounts:查询的表数据返回的条数
+               section: 类型dict, 取区间范围 比如创建时间 开始和结束时间范围,支持多字段取区间范围
+                        例：'section':{'created_at':'1636992000,1637251199','rx_create_duration':'1,200'}
+                                      created_at:取值范围字段名称
+                                      '1636992000,1637251199'：范围值
+               parallel：list类型，支持where条件中子句（）绑定，
+                        例如'parallel': [{'phone': '王', 'user_drugs_name': '王'},{'rx_id':'1','doctor_name':'李'}]
+                        转化为where 条件为 (phone like '%王%' or user_drugs_name like '%王%' ) and (rx_id like '%1%' or doctor_name like '%李%' )
+        :return:接口返回的字段与数据库按照查询条件查询返回数据一致则返回TRUE,不一致返回FALSE
+        '''
+        #按照传入的查询条件拼接sql语句
+        selectcondition=""
+        selectparam=''
+        for data in select_datas:
+            selectparam = data + ',' + selectparam
+        selectparam = selectparam.rstrip(' , ')
+        selectsql = 'SELECT ' + selectparam + ' FROM ' + table_name
+        for key in keys:
+            if key=='where_datas':
+                for k,v in keys[key].items():
+
+                    selectcondition = selectcondition + k + ' like ' + "'%" + str(v) + "%'" + ' AND '
+
+                selectcondition = selectcondition.rstrip(' AND ')
+                selectsql = selectsql + ' WHERE ' + selectcondition
+
+            sectioncond=''
+            if key=="section":
+                 for k,v in keys[key].items():
+                     v=v.split(',',1)
+                     sectioncond=sectioncond +' AND '+k+' > '+ v[0] +' and '+ k +' < '+v[1]
+                     # print(sectioncond)
+            sectioncond = sectioncond.rstrip(' AND ')
+            selectsql = selectsql + sectioncond
+
+
+            strat = ''
+            if key =="parallel":
+                applist = []
+                for k in keys['parallel']:
+
+                    parallelcondition = ''
+                    for m, n in k.items():
+
+                        parallelcondition = parallelcondition +m+" like '%"+n+"%' or "
+
+                    parallelcondition = parallelcondition.rstrip(' or ')
+                    parallelcondition=' and ('+parallelcondition+' )'
+                    applist.append(parallelcondition)
+
+
+                strat=strat.join(applist)
+
+            selectsql = selectsql + strat
+
+            if key=="sortkeydesc":
+                selectsql=selectsql+' ORDER BY '+keys[key]
+            if key=="limitcounts":
+                selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+
+
+        # print(selectsql)
+        # 执行sql语句
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(selectsql)
+            self.conn.commit()
+        except Exception as e:
+            print("模糊查询{0}表报错，报错信息如下：{1}".format(table_name,e))
+        return cursor.fetchall()
+
+if __name__=='__main__':
+    A=DB()
+    table_name = 'mf_order'
+    select_datas = ['id']
+    aa = { 'where_datas' : {'merchant_id': '31'},'section':{'created_at':'1636992000,1637251199','rx_create_duration':'1,200'},'parallel': [{'phone': '王', 'user_drugs_name': '王'},{'rx_id':'1','doctor_name':'李'}],'sortkeydesc':'created_at', 'limitcounts': 10}
+
+    re=A.MultiQuery(table_name,select_datas,**aa)
+    A.close()
+    print(re)
+    # print(type(aa['parallel']))
