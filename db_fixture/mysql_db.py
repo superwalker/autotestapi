@@ -288,6 +288,8 @@ class DB:
                 selectcondition = selectcondition.rstrip(' AND ')
                 selectsql = selectsql + ' WHERE ' + selectcondition
 
+            # print(selectsql)
+
             sectioncond=''
             if key=="section":
                  for k,v in keys[key].items():
@@ -297,6 +299,7 @@ class DB:
             sectioncond = sectioncond.rstrip(' AND ')
             selectsql = selectsql + sectioncond
 
+            # print(selectsql)
 
             strat = ''
             if key =="parallel":
@@ -316,11 +319,17 @@ class DB:
                 strat=strat.join(applist)
 
             selectsql = selectsql + strat
+            # print(selectsql)
+
+
 
             if key=="sortkeydesc":
                 selectsql=selectsql+' ORDER BY '+keys[key]
+            # print(selectsql)
+
             if key=="limitcounts":
                 selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+            # print(selectsql)
 
 
         # print(selectsql)
@@ -337,7 +346,8 @@ if __name__=='__main__':
     A=DB()
     table_name = 'mf_order'
     select_datas = ['id']
-    aa = { 'where_datas' : {'merchant_id': '31'},'section':{'created_at':'1636992000,1637251199','rx_create_duration':'1,200'},'parallel': [{'phone': '王', 'user_drugs_name': '王'},{'rx_id':'1','doctor_name':'李'}],'sortkeydesc':'created_at', 'limitcounts': 10}
+    aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
+
 
     re=A.MultiQuery(table_name,select_datas,**aa)
     A.close()
