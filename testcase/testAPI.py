@@ -51,16 +51,64 @@ class MF_API(unittest.TestCase):
     def tearDown(self):
         # sqldb.close(self)
         pass
+    @classmethod
+    def ParamsAnalysis(self,params):
+
+        where_datas = {'merchant_id': '31'}
+        aa = {'where_datas': where_datas}
+
+        # 字符串转字典
+        params = eval(params)
+        # 将params值加入到dictwhere_datas中
+        where_datas.update(**params)
+        # 删除不需要的元素
+        where_datas.pop('page')
+        where_datas.pop('limit')
+
+        # 判断是否存在end_time参数，如果不存在则去除dic元素
+        if str(where_datas['end_time']).strip() == '':
+            where_datas.pop('end_time')
+
+        # 判断是否存在start_time参数，如果不存在则去除dic元素，存在则设置参数aa['section']，并删除元素start_time，end_time
+        if str(where_datas['start_time']).strip() == '':
+            where_datas.pop('start_time')
+        else:
+            section = {'created_at': str(where_datas['start_time']) + "," + str(where_datas['end_time'])}
+            aa['section'] = section
+            where_datas.pop('start_time')
+            where_datas.pop('end_time')
+
+        # 判断是否存在status参数，如果不存在则去除dic元素
+        if str(where_datas['status']).strip() == '':
+            where_datas.pop('status')
+
+        # 判断是否存在shop_id参数，如果不存在则去除dic元素
+        if str(where_datas['shop_id']).strip() == '':
+            where_datas.pop('shop_id')
+
+        # 判断是否存在search参数，如果不存在则去除dic元素，存在则设置参数aa['parallel']，并删除元素user_drugs_name，phone
+        if str(where_datas['search']).strip() == '':
+            where_datas.pop('search')
+        else:
+            where_datas['phone'] = where_datas.pop('search')
+            where_datas['user_drugs_name'] = where_datas['phone']
+            parallel = [{'user_drugs_name': where_datas['user_drugs_name'], 'phone': where_datas['phone']}]
+            aa['parallel'] = parallel
+            where_datas.pop('user_drugs_name')
+            where_datas.pop('phone')
+
+        # 固定参数 添加，这里添加可处理传值排序问题
+        aa['sortkeydesc'] = 'created_at'
+        aa['limitcounts'] = '10'
+        # 更新元素值
+        aa['where_datas'] = where_datas
+
+        return aa
+
 
     @ddt.data(*testData)
     def test_api(self,data):
-        # 获取ID字段数值，截取结尾数字并去掉开头0
-        # rowNum = int(data['ID'].split("_")[1])
-        # 修改测试报告用例名称
-        # self.__module__="蜜方测试"
 
-        # # 状态码
-        #   self.result['status_code']= re.status_code
         # # 接口请求响应时间
         #   # print(re.elapsed)
         # #接口请求返回大小
@@ -80,12 +128,9 @@ class MF_API(unittest.TestCase):
         self.result = re.json()
 
 
-
-        # '''实例化数据库'''
-
-
         ''' 获取请求返回值第一条数据'''
         resp=self.result['data'][0]
+        # print(resp['status'])
 
         # 处理病症描述字段
         disease_name = []
@@ -93,9 +138,8 @@ class MF_API(unittest.TestCase):
             disease_name.append(v['disease_name'])
         disease_name = ','.join(disease_name)
 
-        '''
-        获取数据库返回第一条数据
-        '''
+        '''获取数据库返回第一条数据'''
+        # '''实例化数据库'''
         sqldb = DB()
         sql = data['headers']
         dbresult=sqldb.executesql(sql)
@@ -103,38 +147,36 @@ class MF_API(unittest.TestCase):
         dbres['created_at']=str(dbres['created_at'])
 
 
-
-        '''
-        获取请求返回的所有id
-        '''
+        '''获取请求返回的所有id'''
         resid = []
         for k in self.result['data']:
             resid.append(k['id'])
 
-        '''
-        获取前十条数据库id
-        '''
+
+
+
+        '''获取第一页数据库id'''
         table_name='mf_order'
         select_datas=['id']
-        aa={'where_datas':{'merchant_id':'31'},'sortkeydesc':'created_at','limitcounts':10}
-        dbid=sqldb.exactselect(table_name,select_datas,**aa)
+        aa= self.ParamsAnalysis(data['params'])
+
+        dbid=sqldb.MultiQuery(table_name,select_datas,**aa)
 
         resdbid=[]
         for k in dbid:
             resdbid.append(k['id'])
-        # print(resdbid)
+        print(resdbid)
 
 
         '''获取数据库查询总数据量'''
         select_datas1 = ['count(*)']
-        aa = {'where_datas': {'merchant_id': '31'}}
-        dbtotal = sqldb.exactselect(table_name, select_datas1, **aa)
+        aa= self.ParamsAnalysis(data['params'])
+        dbtotal = sqldb.MultiQuery(table_name, select_datas1, **aa)
         dbtotal = dbtotal[0]['count(*)']
+        print(dbtotal)
 
         '''获取请求返回数据总数'''
         total=self.result['total']
-
-
 
 
         '''第一条数据字段和数据库第一条数据断言'''
