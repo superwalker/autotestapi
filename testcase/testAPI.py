@@ -5,12 +5,11 @@ __author__ = 'walker'
 import os,sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import unittest,requests,ddt
-from config import setting
 from lib.readexcel import ReadExcel
 from lib.sendrequests import SendRequests
 import json
 import warnings
-from lib.getToken import Token
+from lib.GetToken import Token
 import configparser as cparser
 from config import setting
 from db_fixture.mysql_db import DB
@@ -199,7 +198,7 @@ class MF_API(unittest.TestCase):
             print('请求返回code:' + str(re.status_code) )
 
             '''请求第一页所有id 和数据库前10条id断言'''
-            self.assertEqual(resid, resdbid, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
+            self.assertListEqual(resid, resdbid, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
             print('请求第一页所有id:')
             print (resid)
             print('数据库第一页id:')
@@ -247,18 +246,23 @@ class MF_API(unittest.TestCase):
             print(dbtotal)
 
 
-
-
-
-
-
-
-
-
-
-
-
-if __name__=='__main__':
-
-    unittest.main()
-
+# if __name__=='__main__':
+#
+#     # unittest.main()
+#
+#     logins = {"account": "ahslyf",
+#               "password": "slyf666888",
+#               "phone_url": "http://store.backend.lyky.xyz/store/auth/get-boss-phone",
+#               "sms_url": "http://store.backend.lyky.xyz/store/auths/sms-code",
+#               "login_url": "http://store.backend.lyky.xyz/store/auths/login"
+#               }
+#
+#     token = "Bearer  " + Token().get_sms_token(logins)
+#     h = {
+#         'Authorization': token,
+#         'Content-Type': 'application/json;charset=UTF-8'
+#     }
+#     url = 'http://store.backend.lyky.xyz/store/merchant-products/index'
+#     data = {"page": 1, "limit": 15, "category_id": "0", "keyword": ""}
+#     re = requests.post(url=url, headers=h, data=data, verify=False)
+#     print(re.json())

@@ -3,80 +3,113 @@
 __author__ = 'walker'
 
 import os,sys
-from config.setting import BASE_DIR
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import unittest,requests,ddt
 from config import setting
 from lib.readexcel import ReadExcel
 from lib.sendrequests import SendRequests
-from lib.writeexcel import WriteExcel
-import json
+import configparser as cparser
 import warnings
-from lib.GetToken import get_token
+from lib.GetToken import Token
+from db_fixture.mysql_db import DB
 
-testdata = os.path.join(BASE_DIR,"database","DemoPharmacistAPITestCase.xlsx")
+testdata = os.path.join(setting.BASE_DIR,"database","DemoPharmacistAPITestCase.xlsx")
 testData = ReadExcel(testdata, "Sheet1").read_data()
 
-TARGET_FILE = os.path.join(BASE_DIR,"report","excelReport","DemoPharmacistAPITestCase.xlsx")
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+cf = cparser.ConfigParser()
+cf.read(setting.TEST_CONFIG,encoding='UTF-8')
+ip=cf.get("sys","IP")
+
+logins = {"account": "ahdsdyf",
+          "password": "12345678",
+          "appid": "258634629320884225",
+          "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
+          "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
+            }
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
     """蜜方系统-药师资质"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
-        token = "Bearer  " + get_token()
+
+
+        token = "Bearer  " + Token().get_cas_token(logins)
         h = {
+
             'Authorization': token
         }
         self.s = requests.session()
         self.s.headers.update(h)
+
+
 
     def tearDown(self):
         pass
 
     @ddt.data(*testData)
     def test_api(self,data):
-        # 获取ID字段数值，截取结尾数字并去掉开头0
-        rowNum = int(data['ID'].split("_")[1])
 
+        data['url'] = ip + data['url']
         # 修改测试报告用例名称
         self._testMethodName = data['ID'] + ':' + data['UseCase']
 
+
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
-        print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
-        print("请求参数: {0}".format(data['params']))
-        # print("post请求body类型为：{0} ,body内容为：{1}".format(data['type'], data['body']))
-        print(("post请求body类型为：{0}".format(data['type'])))
+
         # 发送请求
         re = SendRequests().sendRequests(self.s,data)
         # 获取服务端返回的值
 
         self.result = re.json()
-
-        status_code= re.status_code
-
-        # # 获取excel表格数据的状态码和消息
-        readData_code = int(data["status_code"])
-
-        readData_body = data["body"]
+        respon=self.result
 
 
-        ''' json值转为list 才可以进行判断对比'''
-        readData_body=json.loads(readData_body)
+
+        sqldb = DB()
+        sql = data['headers']+"'"+str(logins['account'])+"'"
+        dbresult = sqldb.executesql(sql)
+        dbres = dbresult[0]
 
 
-        if readData_code == status_code and readData_body == self.result:
-            OK_data = "PASS"
-            print("用例测试结果:  {0}---->{1}".format(data['ID'],OK_data))
-            WriteExcel(TARGET_FILE).write_data(rowNum + 1,OK_data)
-        if readData_code != status_code or readData_body != self.result:
-            NOT_data = "FAIL"
-            print("用例测试结果:  {0}---->{1}".format(data['ID'], NOT_data))
-            WriteExcel(TARGET_FILE).write_data(rowNum + 1,NOT_data)
+        if respon:
+            '''接口返回与数据库查询断言'''
+            self.assertEqual(respon['id'], dbres['id'], "接口返回id:%d ,数据库返回id:%d" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['merchant_id'], dbres['merchant_id'], "接口返回merchant_id:%s ,数据库返回merchant_id:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['name'], dbres['name'], "接口返回name%s ,数据库返回name:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['card_no'], dbres['card_no'], "接口返回card_no:%s ,数据库返回card_no:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['register_no'], dbres['register_no'], "接口返回register_no:%s ,数据库返回register_no:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['qualification_no'], dbres['qualification_no'], "接口返回qualification_no:%s ,数据库返回qualification_no:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['company_name'], dbres['company_name'], "接口返回company_name:%s ,数据库返回company_name:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['sign_url'], dbres['sign_url'], "接口返回电子签名sign_url:%s ,数据库返回sign_url:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['register_url'], dbres['register_url'],"接口返回执业药师资格证register_url:%s ,数据库返回register_url:%s" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['qualification_url'], dbres['qualification_url'],"接口返回执业药师注册证qualification_url:%s ,数据库返回qualification_url:%s" % (respon['id'], dbres['id']))
+            print('数据返回值：')
+            print(respon)
+            print('数据库首条数据返回值：')
+            print(dbres)
 
-        self.assertEqual(status_code, readData_code, "返回实际结果是->:%s" % status_code)
+            '''请求返回code断言'''
+            self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
+            print('请求返回code:' + str(re.status_code))
 
-        self.assertEqual(self.result, readData_body, "返回实际结果是->:%s" % self.result)
+        else:
+            '''无数据查询出断言'''
+            self.assertEqual(respon, dbresult, "接口返回为空值：%s,数据库返回为空值：%s" % (respon, dbresult))
+            print('接口返回为空：' + respon)
+            print('接口返回为空：' + dbresult)
+
+
+            '''请求返回code断言'''
+            self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
+            print('请求返回code:' + str(re.status_code))
+
+
+
+
+
+
 
 
 

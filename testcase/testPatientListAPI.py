@@ -3,8 +3,6 @@
 __author__ = 'walker'
 
 import os,sys
-
-from config.setting import BASE_DIR
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import unittest,requests,ddt
 from config import setting
@@ -13,20 +11,35 @@ from lib.sendrequests import SendRequests
 from lib.writeexcel import WriteExcel
 import json
 import warnings
-from lib.GetToken import get_token
+from lib.GetToken import Token
+import configparser as cparser
+from db_fixture.mysql_db import DB
 
-testdata = os.path.join(BASE_DIR,"database","PatientListApi.xlsx")
+testdata = os.path.join(setting.BASE_DIR,"database","PatientListApi.xlsx")
 testData = ReadExcel(testdata, "Sheet1").read_data()
 
-TARGET_FILE = os.path.join(BASE_DIR,"report","excelReport","PatientListApi.xlsx")
+# TARGET_FILE = os.path.join(setting.BASE_DIR,"report","excelReport","PatientListApi.xlsx")
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+cf = cparser.ConfigParser()
+cf.read(setting.TEST_CONFIG,encoding='UTF-8')
+ip=cf.get("sys","IP")
+
+logins = {"account": "ahdsdyf",
+          "password": "12345678",
+          "appid": "258634629320884225",
+          "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
+          "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
+            }
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
     """蜜方系统-就诊人列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
-        token = "Bearer  " + get_token()
+        token = "Bearer  " + Token().get_cas_token(logins)
         h = {
+
             'Authorization': token
         }
         self.s = requests.session()
@@ -35,51 +48,140 @@ class Demo_API(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def ParamsAnalysis(self,params,remove):
+
+        where_datas = {}
+        aa = {'where_datas': where_datas}
+
+        # 字符串转字典
+        params = eval(params)
+        # 将params值加入到dictwhere_datas中
+        where_datas.update(**params)
+
+        # 删除不需要的元素
+        for k in remove:
+            where_datas.pop(k)
+
+        # 判断是否存在search参数，如果不存在则去除dic元素，存在则设置参数aa['parallel']，并删除元素user_drugs_name，phone
+        if 'search' in where_datas and str(where_datas['search']).strip() == '':
+            where_datas.pop('search')
+        else:
+            where_datas['phone'] = where_datas.pop('search')
+            where_datas['name'] = where_datas['phone']
+            parallel = [{'name': where_datas['name'], 'phone': where_datas['phone']}]
+            aa['parallel'] = parallel
+            where_datas.pop('name')
+            where_datas.pop('phone')
+
+        # 固定参数 添加，这里添加可处理传值排序问题
+        aa['sortkeydesc'] = 'created_at'
+        aa['limitcounts'] = where_datas.pop('limit')
+        # 更新元素值
+        aa['where_datas'] = where_datas
+
+        return aa
+
     @ddt.data(*testData)
     def test_api(self,data):
-        # 获取ID字段数值，截取结尾数字并去掉开头0
-        rowNum = int(data['ID'].split("_")[1])
 
+        #拼接URL
+        data['url'] = ip + data['url']
         # 修改测试报告用例名称
         self._testMethodName = data['ID'] + ':' + data['UseCase']
 
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
-        print("请求方式: {0}，请求URL: {1}".format(data['method'],data['url']))
-        print("请求参数: {0}".format(data['params']))
-        print("post请求body类型为：{0} ,body预期结果内容为：{1}".format(data['type'], data['body']))
         # 发送请求
         re = SendRequests().sendRequests(self.s,data)
         # 获取服务端返回的值
 
         self.result = re.json()
+        resp=self.result['data']
 
-        status_code= re.status_code
+        '''获取请求返回数据总数'''
+        total = self.result['total']
+        # print(resp)
+        # print(type(resp))
+
+        sqldb = DB()
+        remove={'page','sort'}
+        aa = self.ParamsAnalysis(data['body'],remove)
+
+        table_name = 'mf_merchant_user_drugs'
+        select_datas = ['*']
+        dbresult =sqldb.MultiQuery(table_name, select_datas, **aa)
 
 
-        # # 获取excel表格数据的状态码和消息
-        readData_code = int(data["status_code"])
+        '''获取数据库第一页数据'''
+        if len(dbresult):
+            resdbid = []
+            for k in dbresult:
+                resdbid.append(k['id'])
+        # print(resdbid)
+            dbtotal=len(dbresult)
+        # print(dbtotal)
 
-        readData_body = data["body"]
+        if resp :
+            respon=resp[0]
+            dbres = dbresult[0]
+
+            dbres['created_at']=str(dbres['created_at'])
+            dbres['updated_at'] = str(dbres['updated_at'])
+
+            '''获取第一页请求返回id'''
+            for k in resp:
+                resid=[]
+                resid.append(k['id'])
+
+            # print(resid)
 
 
-        ''' json值转为list 才可以进行判断对比'''
-        readData_body=json.loads(readData_body)
+            '''接口返回与数据库查询断言'''
+            self.assertEqual(respon['id'], dbres['id'], "接口返回id:%d ,数据库返回id:%d" % (respon['id'], dbres['id']))
+            self.assertEqual(respon['merchant_id'], dbres['merchant_id'], "接口返回merchant_id:%s ,数据库返回merchant_id:%s" % (respon['merchant_id'], dbres['merchant_id']))
+            self.assertEqual(respon['shop_id'], dbres['shop_id'], "接口返回shop_id:%s ,数据库返回shop_id:%s" % (respon['shop_id'], dbres['shop_id']))
+            self.assertEqual(respon['shop_name'], dbres['shop_name'], "接口返回shop_name:%s ,数据库返回shop_name:%s" % (respon['shop_name'], dbres['shop_name']))
+            self.assertEqual(respon['name'], dbres['name'], "接口返回name:%s ,数据库返回name:%s" % (respon['name'], dbres['name']))
+            self.assertEqual(respon['card_no'], dbres['card_no'], "接口返回card_no:%s ,数据库返回card_no:%s" % (respon['card_no'], dbres['card_no']))
+            self.assertEqual(respon['phone'], dbres['phone'], "接口返回phone:%s ,数据库返回phone:%s" % (respon['phone'], dbres['phone']))
+            self.assertEqual(respon['birthday'], dbres['birthday'], "接口返回birthday:%s ,数据库返回birthday:%s" % (respon['birthday'], dbres['birthday']))
+            self.assertEqual(respon['sex'], dbres['sex'], "接口返回sex:%s ,数据库返回sex:%s" % (respon['sex'], dbres['sex']))
+            self.assertEqual(respon['age'], dbres['age'], "接口返回age:%s ,数据库返回age:%s" % (respon['age'], dbres['age']))
+            self.assertEqual(respon['address'], dbres['address'], "接口返回address:%s ,数据库返回address:%s" % (respon['address'], dbres['address']))
+            self.assertEqual(respon['use_number'], dbres['use_number'],"接口返回use_number:%s ,数据库返回use_number:%s" % (respon['use_number'], dbres['use_number']))
+            self.assertEqual(respon['created_at'], dbres['created_at'],"接口返回created_at:%s ,数据库返回created_at:%s" % (respon['created_at'], dbres['created_at']))
+            self.assertEqual(respon['updated_at'], dbres['updated_at'],"接口返回updated_at:%s ,数据库返回updated_at:%s" % (respon['updated_at'], dbres['updated_at']))
+
+            # print(type(respon))
+            # print(type(dbres))
+            # if self.assertDictEqual(respon,dbres,"111"):
+            #     print('首条数据断言成功')
 
 
-        if readData_code == status_code and readData_body == self.result['data']:
-            OK_data = "PASS"
-            print("用例测试结果:  {0}---->{1}".format(data['ID'],OK_data))
-            WriteExcel(TARGET_FILE).write_data(rowNum + 1,OK_data)
-        if readData_code != status_code or readData_body != self.result['data']:
-            NOT_data = "FAIL"
-            print("用例测试结果:  {0}---->{1}".format(data['ID'], NOT_data))
-            WriteExcel(TARGET_FILE).write_data(rowNum + 1,NOT_data)
+            '''请求返回code断言'''
+            self.assertEqual(str(re.status_code),data['status_code'] , "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, data['status_code']))
+            print('请求返回code:' + str(re.status_code)+",预期返回code:"+str(data['status_code']))
 
-        self.assertEqual(status_code, readData_code, "返回实际结果是->:%s" % status_code)
+            '''请求第一页所有id 和数据库前10条id断言'''
+            self.assertListEqual(resid, resdbid, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
+            print('请求第一页所有id:')
+            print(resid)
+            print('数据库第一页id:')
+            print(resdbid)
+            # self.assertListEqual()
 
-        self.assertEqual(self.result['data'], readData_body, "返回实际结果是->:%s" % self.result['data'])
+            '''请求返回数据总数和数据库数据总数断言'''
+            self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
+            print('请求返回数据总数:')
+            print(total)
+            print('数据库数据总数:')
+            print(dbtotal)
+
+        else:
+            pass
 
 
 
 if __name__=='__main__':
     unittest.main()
+
+

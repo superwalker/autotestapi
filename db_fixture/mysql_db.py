@@ -253,6 +253,7 @@ class DB:
 
     #模糊查询表数据
     def MultiQuery(self,table_name,select_datas,**keys):
+
         '''
         :notes:接口返回的字段与数据库按照查询条件查询返回数据一致
         :author：zhouyu
@@ -261,7 +262,8 @@ class DB:
         :param selectdatas:查询的表的属性值，格式为list，例:['name','id'],查询的sql语言类似于select id,name XXX
         :param **keys可变参数
                searchdatas:查询的表字段和字段值，格式为字典，例{key1:value1,key2:value2....}
-               sortkeydesc:查询的表数据排序字段，按照该字段逆序排序
+               sortkeydesc:查询的表数据排序字段，按照该字段降序排序
+               sortkeyASC:查询的表数据排序字段，按照该字段升序排序
                limitcounts:查询的表数据返回的条数
                section: 类型dict, 取区间范围 比如创建时间 开始和结束时间范围,支持多字段取区间范围
                         例：'section':{'created_at':'1636992000,1637251199','rx_create_duration':'1,200'}
@@ -272,12 +274,14 @@ class DB:
                         转化为where 条件为 (phone like '%王%' or user_drugs_name like '%王%' ) and (rx_id like '%1%' or doctor_name like '%李%' )
         :return:接口返回的字段与数据库按照查询条件查询返回数据一致则返回TRUE,不一致返回FALSE
         '''
+
         #按照传入的查询条件拼接sql语句
         selectcondition=""
         selectparam=''
         for data in select_datas:
             selectparam = data + ',' + selectparam
         selectparam = selectparam.rstrip(' , ')
+
         selectsql = 'SELECT ' + selectparam + ' FROM ' + table_name
         for key in keys:
             if key=='where_datas':
@@ -286,7 +290,7 @@ class DB:
                     selectcondition = selectcondition + k + ' like ' + "'%" + str(v) + "%'" + ' AND '
 
                 selectcondition = selectcondition.rstrip(' AND ')
-                selectsql = selectsql + ' WHERE ' + selectcondition
+                selectsql = selectsql + ' WHERE 1=1 ' + selectcondition
 
             # print(selectsql)
 
@@ -325,6 +329,10 @@ class DB:
 
             if key=="sortkeydesc":
                 selectsql=selectsql+' ORDER BY '+keys[key]
+            # print(selectsql)
+
+            if key=="sortkeyASC":
+                selectsql=selectsql+' ORDER BY '+keys[key] + 'asc'
             # print(selectsql)
 
             if key=="limitcounts":
