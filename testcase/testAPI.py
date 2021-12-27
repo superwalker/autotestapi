@@ -22,6 +22,12 @@ ip=cf.get("sys","IP")
 
 testData = ReadExcel(setting.SOURCE_FILE, "Sheet1").read_data()
 
+logins = {"account": "ahdsdyf",
+                  "password": "12345678",
+                  "appid": "258634629320884225",
+                  "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
+                  "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
+                    }
 
 @ddt.ddt
 class MF_API(unittest.TestCase):
@@ -30,12 +36,7 @@ class MF_API(unittest.TestCase):
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
 
-        logins = {"account": "ahdsdyf",
-                  "password": "12345678",
-                  "appid": "258634629320884225",
-                  "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
-                  "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
-                    }
+
 
         token = "Bearer  " + Token().get_cas_token(logins)
         h = {
@@ -52,17 +53,22 @@ class MF_API(unittest.TestCase):
         pass
 
     def ParamsAnalysis(self,params):
-
-        where_datas = {'merchant_id': '31'}
+        sqldb = DB()
+        tablename = 'mf_merchant_admin'
+        selectDate = ['id']
+        key = {'where_datas': {'account': logins['account']}}
+        merchantid = sqldb.exactselect(tablename, selectDate, **key)
+        where_datas = {'merchant_id': merchantid[0]['id']}
         aa = {'where_datas': where_datas}
 
         # 字符串转字典
         params = eval(params)
         # 将params值加入到dictwhere_datas中
         where_datas.update(**params)
+
         # 删除不需要的元素
         where_datas.pop('page')
-        where_datas.pop('limit')
+        # where_datas.pop('limit')
 
         # 判断是否存在end_time参数，如果不存在则去除dic元素
         if str(where_datas['end_time']).strip() == '':
@@ -98,7 +104,7 @@ class MF_API(unittest.TestCase):
 
         # 固定参数 添加，这里添加可处理传值排序问题
         aa['sortkeydesc'] = 'created_at'
-        aa['limitcounts'] = '10'
+        aa['limitcounts'] = where_datas.pop('limit')
         # 更新元素值
         aa['where_datas'] = where_datas
 
@@ -172,7 +178,6 @@ class MF_API(unittest.TestCase):
             aa = self.ParamsAnalysis(data['params'])
             dbtotal = sqldb.MultiQuery(table_name, select_datas1, **aa)
             dbtotal = dbtotal[0]['count(*)']
-            # print(dbtotal)
 
 
             '''第一条数据字段和数据库第一条数据断言'''
@@ -225,6 +230,7 @@ class MF_API(unittest.TestCase):
             table_name = 'mf_order'
             select_datas1 = ['count(*)']
             aa = self.ParamsAnalysis(data['params'])
+            print(aa)
             dbtotal = sqldb.MultiQuery(table_name, select_datas1, **aa)
             dbtotal = dbtotal[0]['count(*)']
 

@@ -286,8 +286,11 @@ class DB:
         for key in keys:
             if key=='where_datas':
                 for k,v in keys[key].items():
+                    if k=='merchant_id':
+                        selectcondition=' AND '+ selectcondition + k + ' = '  + str(v) + ' AND '
+                    else:
+                        selectcondition =  selectcondition + k + ' like ' + "'%" + str(v) + "%'" + ' AND '
 
-                    selectcondition = selectcondition + k + ' like ' + "'%" + str(v) + "%'" + ' AND '
 
                 selectcondition = selectcondition.rstrip(' AND ')
                 selectsql = selectsql + ' WHERE 1=1 ' + selectcondition
@@ -325,22 +328,20 @@ class DB:
             selectsql = selectsql + strat
             # print(selectsql)
 
-
-
             if key=="sortkeydesc":
-                selectsql=selectsql+' ORDER BY '+keys[key]
+                selectsql=selectsql+' ORDER BY '+keys[key] + ' desc'
             # print(selectsql)
 
             if key=="sortkeyASC":
-                selectsql=selectsql+' ORDER BY '+keys[key] + 'asc'
+                selectsql=selectsql+' ORDER BY '+keys[key] + ' asc'
             # print(selectsql)
 
             if key=="limitcounts":
-                selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+                selectsql=selectsql+'  LIMIT '+str(keys[key])
             # print(selectsql)
 
 
-        # print(selectsql)
+        print('执行sql为： '+str(selectsql))
         # 执行sql语句
         try:
             with self.conn.cursor() as cursor:
@@ -354,8 +355,8 @@ if __name__=='__main__':
     A=DB()
     table_name = 'mf_order'
     select_datas = ['id']
-    aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
-
+    # aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
+    aa={'where_datas': {'merchant_id': 31, 'status': 1}, 'sortkeydesc': 'created_at', 'limitcounts': '10'}
 
     re=A.MultiQuery(table_name,select_datas,**aa)
     A.close()

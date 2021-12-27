@@ -32,6 +32,7 @@ logins = {"account": "ahdsdyf",
           "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
             }
 
+
 @ddt.ddt
 class Demo_API(unittest.TestCase):
     """蜜方系统-就诊人列表"""
@@ -45,14 +46,20 @@ class Demo_API(unittest.TestCase):
         self.s = requests.session()
         self.s.headers.update(h)
 
+
     def tearDown(self):
         pass
 
+
     def ParamsAnalysis(self,params,remove):
-
-        where_datas = {}
+        sqldb = DB()
+        tablename='mf_merchant_admin'
+        selectDate=['id']
+        key= {'where_datas':{'account':logins['account']}}
+        merchantid=sqldb.exactselect(tablename,selectDate,**key)
+        where_datas = {'merchant_id':merchantid[0]['id']}
         aa = {'where_datas': where_datas}
-
+        sqldb.close()
         # 字符串转字典
         params = eval(params)
         # 将params值加入到dictwhere_datas中
@@ -75,7 +82,7 @@ class Demo_API(unittest.TestCase):
 
         # 固定参数 添加，这里添加可处理传值排序问题
         aa['sortkeydesc'] = 'created_at'
-        aa['limitcounts'] = where_datas.pop('limit')
+        # aa['limitcounts'] = where_datas.pop('limit')
         # 更新元素值
         aa['where_datas'] = where_datas
 
@@ -92,47 +99,54 @@ class Demo_API(unittest.TestCase):
         print("******* 正在执行用例 ->{0} *********".format(data['ID']))
         # 发送请求
         re = SendRequests().sendRequests(self.s,data)
-        # 获取服务端返回的值
 
         self.result = re.json()
         resp=self.result['data']
 
         '''获取请求返回数据总数'''
         total = self.result['total']
-        # print(resp)
-        # print(type(resp))
 
-        sqldb = DB()
-        remove={'page','sort'}
+
+        '''获取数据库第一页数据'''
+        remove={'page','sort','limit'}
         aa = self.ParamsAnalysis(data['body'],remove)
-
+        sqldb = DB()
         table_name = 'mf_merchant_user_drugs'
         select_datas = ['*']
         dbresult =sqldb.MultiQuery(table_name, select_datas, **aa)
 
-
-        '''获取数据库第一页数据'''
+        '''切片取返回值前10条数据，如果不够十条，展示所有值'''
         if len(dbresult):
             resdbid = []
             for k in dbresult:
                 resdbid.append(k['id'])
-        # print(resdbid)
-            dbtotal=len(dbresult)
-        # print(dbtotal)
+            resdbid=resdbid[0:10:1]
+
+
+
+        '''查询数据库返回总数'''
+        dbtotal = len(dbresult)
+        sqldb.close()
+
 
         if resp :
+
+            '''获取请求第一条数据'''
             respon=resp[0]
+
+            '''获取数据库返回第一条数据'''
             dbres = dbresult[0]
 
+            '''处理断言类型格式不符'''
             dbres['created_at']=str(dbres['created_at'])
             dbres['updated_at'] = str(dbres['updated_at'])
 
+
             '''获取第一页请求返回id'''
+            resid = []
             for k in resp:
-                resid=[]
                 resid.append(k['id'])
 
-            # print(resid)
 
 
             '''接口返回与数据库查询断言'''
@@ -162,7 +176,7 @@ class Demo_API(unittest.TestCase):
             print('请求返回code:' + str(re.status_code)+",预期返回code:"+str(data['status_code']))
 
             '''请求第一页所有id 和数据库前10条id断言'''
-            self.assertListEqual(resid, resdbid, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
+            self.assertListEqual(resid, resdbid, "接口返回第一页所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
             print('请求第一页所有id:')
             print(resid)
             print('数据库第一页id:')
@@ -177,7 +191,26 @@ class Demo_API(unittest.TestCase):
             print(dbtotal)
 
         else:
-            pass
+
+            resp = tuple(resp)
+            '''无数据查询出断言'''
+            self.assertEqual(resp, dbresult, "接口返回为空值：%s,数据库返回为空值：%s" % (resp, dbresult))
+            print('接口返回为空：')
+            print(resp)
+            print('数据库返回为空：')
+            print(dbresult)
+
+
+            '''请求返回code断言'''
+            self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
+            print('请求返回code:' + str(re.status_code))
+
+            '''请求返回数据总数和数据库数据总数断言'''
+            self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
+            print('请求返回数据总数:')
+            print(total)
+            print('数据库数据总数:')
+            print(dbtotal)
 
 
 
