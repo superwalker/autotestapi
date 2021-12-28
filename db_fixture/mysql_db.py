@@ -160,6 +160,7 @@ class DB:
                 selectsql=selectsql+' ORDER BY '+keys[key]
             if key=="limitcounts":
                 selectsql=selectsql+' DESC LIMIT '+str(keys[key])
+
         # 执行sql语句
         try:
             with self.conn.cursor() as cursor:
@@ -230,6 +231,25 @@ class DB:
             print("执行sql语句，报错信息如下：{0}".format(e))
         return cursor.fetchall()
 
+        # 执行sql语句
+    def executevaluesql(self, sql, **key):
+        """
+        :notes:执行sql语句，并获取结果
+        :author：zhouyu
+        :date:2021-12-27
+        :param sql:执行的sql语句
+        :param key:sql参数  dict格式 例：{'merchant_id': 31}
+        :return:返回sql执行后返回的结果，返回数据类型为列表
+        """
+        # print(key)
+        try:
+
+            with self.conn.cursor() as cursor:
+                cursor.execute(sql,key)
+            self.conn.commit()
+        except Exception as e:
+            print("执行sql语句，报错信息如下：{0}".format(e))
+        return cursor.fetchall()
     # 关闭数据库
     def close(self):
         self.conn.close()
@@ -351,14 +371,14 @@ class DB:
             print("模糊查询{0}表报错，报错信息如下：{1}".format(table_name,e))
         return cursor.fetchall()
 
-if __name__=='__main__':
-    A=DB()
-    table_name = 'mf_order'
-    select_datas = ['id']
-    # aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
-    aa={'where_datas': {'merchant_id': 31, 'status': 1}, 'sortkeydesc': 'created_at', 'limitcounts': '10'}
-
-    re=A.MultiQuery(table_name,select_datas,**aa)
-    A.close()
-    print(re)
-    # print(type(aa['parallel']))
+# if __name__=='__main__':
+    # A=DB()
+    # table_name = 'mf_order'
+    # select_datas = ['id']
+    # # aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
+    # aa={'where_datas': {'merchant_id': 31, 'status': 1}, 'sortkeydesc': 'created_at', 'limitcounts': '10'}
+    #
+    # re=A.MultiQuery(table_name,select_datas,**aa)
+    # A.close()
+    # print(re)
+    # # print(type(aa['parallel']))

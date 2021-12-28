@@ -165,17 +165,16 @@ class MF_API(unittest.TestCase):
             table_name = 'mf_order'
             select_datas = ['id']
             '''查询条件解析传值'''
-            aa = self.ParamsAnalysis(data['params'])
+            aa = self.ParamsAnalysis(data['body'])
             dbid = sqldb.MultiQuery(table_name, select_datas, **aa)
 
             resdbid = []
             for k in dbid:
                 resdbid.append(k['id'])
-            # print(resdbid)
 
             '''获取数据库查询总数据量'''
             select_datas1 = ['count(*)']
-            aa = self.ParamsAnalysis(data['params'])
+            aa = self.ParamsAnalysis(data['body'])
             dbtotal = sqldb.MultiQuery(table_name, select_datas1, **aa)
             dbtotal = dbtotal[0]['count(*)']
 
@@ -193,10 +192,10 @@ class MF_API(unittest.TestCase):
             self.assertEqual(disease_name, dbres['disease_name'],"接口返回【病情描述disease_name】:%s ,数据库返回【病情描述disease_name】:%s" % (disease_name, dbres['disease_name']))
             self.assertEqual(resp['status'], dbres['status'],"接口返回【订单状态status】:%s ,数据库返回【订单状态status】:%s" % (resp['status'], dbres['status']))
             self.assertEqual(resp['remark'], dbres['remark'],"接口返回【备注remark】:%s ,数据库返回【备注remark】:%s" % (resp['remark'], dbres['remark']))
-            print('首条数据返回值：')
-            print(resp)
-            print('数据库首条数据返回值：')
-            print(dbres)
+            print('首条数据返回id：')
+            print(resp['id'])
+            print('数据库首条数据返回id：')
+            print(dbres['id'])
 
             '''请求返回code断言'''
             self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
@@ -229,8 +228,7 @@ class MF_API(unittest.TestCase):
             '''获取数据库查询总数据量'''
             table_name = 'mf_order'
             select_datas1 = ['count(*)']
-            aa = self.ParamsAnalysis(data['params'])
-            print(aa)
+            aa = self.ParamsAnalysis(data['body'])
             dbtotal = sqldb.MultiQuery(table_name, select_datas1, **aa)
             dbtotal = dbtotal[0]['count(*)']
 
@@ -253,22 +251,3 @@ class MF_API(unittest.TestCase):
 
 
 # if __name__=='__main__':
-#
-#     # unittest.main()
-#
-#     logins = {"account": "ahslyf",
-#               "password": "slyf666888",
-#               "phone_url": "http://store.backend.lyky.xyz/store/auth/get-boss-phone",
-#               "sms_url": "http://store.backend.lyky.xyz/store/auths/sms-code",
-#               "login_url": "http://store.backend.lyky.xyz/store/auths/login"
-#               }
-#
-#     token = "Bearer  " + Token().get_sms_token(logins)
-#     h = {
-#         'Authorization': token,
-#         'Content-Type': 'application/json;charset=UTF-8'
-#     }
-#     url = 'http://store.backend.lyky.xyz/store/merchant-products/index'
-#     data = {"page": 1, "limit": 15, "category_id": "0", "keyword": ""}
-#     re = requests.post(url=url, headers=h, data=data, verify=False)
-#     print(re.json())
