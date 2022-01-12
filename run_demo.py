@@ -24,7 +24,7 @@ def run_case(all_case,result_path=setting.TEST_REPORT):
     # test_data.init_data()
 
     now = time.strftime("%Y-%m-%d %H_%M_%S")
-    filename =  result_path + '\\' + now + 'result.html'
+    filename =  result_path + '/' + now + 'result.html'
     filename=str(filename)
     print(filename)
     fp = open(filename,'wb')
