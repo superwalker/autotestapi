@@ -15,6 +15,7 @@ from package.HTMLTestRunner import HTMLTestRunner
 
 def add_case(test_path=setting.TEST_CASE):
     """加载所有的测试用例"""
+
     discover = unittest.defaultTestLoader.discover(test_path, pattern='*API.py')
     return discover
 

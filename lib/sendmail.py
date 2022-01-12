@@ -47,7 +47,7 @@ def send_mail(file_new):
     msg['to'] = RECEIVER
 
     try:
-        server = smtplib.SMTP("smtp.qq.com")
+        server = smtplib.SMTP(HOST)
         server.connect(HOST)
         server.starttls()
         server.login(USER,PWD)

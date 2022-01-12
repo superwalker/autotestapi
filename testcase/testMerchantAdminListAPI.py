@@ -8,8 +8,8 @@ import unittest,requests,ddt
 from config import setting
 from lib.readexcel import ReadExcel
 from lib.sendrequests import SendRequests
-from lib.writeexcel import WriteExcel
-import json
+# from lib.writeexcel import WriteExcel
+# import json
 import warnings
 from lib.GetToken import Token
 import configparser as cparser
