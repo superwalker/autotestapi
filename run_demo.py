@@ -7,7 +7,7 @@ import os,sys
 sys.path.append(os.path.dirname(__file__))
 from config import setting
 import unittest,time
-from HTMLTestRunner import HTMLTestRunner
+from lib.HTMLTestRunner import HTMLTestRunner
 from lib.sendmail import send_mail
 from lib.newReport import new_report
 from db_fixture import test_data
