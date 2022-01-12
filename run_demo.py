@@ -20,8 +20,7 @@ def add_case(test_path=setting.TEST_CASE):
 def run_case(all_case,result_path=setting.TEST_REPORT):
     """执行所有的测试用例"""
 
-    # 初始化接口测试数据
-    # test_data.init_data()
+
 
     now = time.strftime("%Y-%m-%d %H_%M_%S")
     filename =  result_path + '/' + now + 'result.html'
