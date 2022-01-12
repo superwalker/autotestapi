@@ -29,3 +29,7 @@ class ReadExcel():
             print("表格是空数据!")
             return None
 
+    def read_row(self,i,j):
+       keys=self.table.cell(i, j).value
+       return keys
+

@@ -232,6 +232,7 @@ class DB:
         return cursor.fetchall()
 
         # 执行sql语句
+
     def executevaluesql(self, sql, **key):
         """
         :notes:执行sql语句，并获取结果
@@ -241,7 +242,6 @@ class DB:
         :param key:sql参数  dict格式 例：{'merchant_id': 31}
         :return:返回sql执行后返回的结果，返回数据类型为列表
         """
-        # print(key)
         try:
 
             with self.conn.cursor() as cursor:
@@ -310,12 +310,11 @@ class DB:
                         selectcondition=' AND '+ selectcondition + k + ' = '  + str(v) + ' AND '
                     else:
                         selectcondition =  selectcondition + k + ' like ' + "'%" + str(v) + "%'" + ' AND '
-
-
+                # print(selectcondition)
+                # {'where_datas': {'merchant_id': 31}, 'sortkeydesc': 'created_at'}
                 selectcondition = selectcondition.rstrip(' AND ')
                 selectsql = selectsql + ' WHERE 1=1 ' + selectcondition
 
-            # print(selectsql)
 
             sectioncond=''
             if key=="section":
@@ -325,8 +324,6 @@ class DB:
                      # print(sectioncond)
             sectioncond = sectioncond.rstrip(' AND ')
             selectsql = selectsql + sectioncond
-
-            # print(selectsql)
 
             strat = ''
             if key =="parallel":
@@ -358,12 +355,14 @@ class DB:
 
             if key=="limitcounts":
                 selectsql=selectsql+'  LIMIT '+str(keys[key])
-            # print(selectsql)
 
 
         print('执行sql为： '+str(selectsql))
+
+
         # 执行sql语句
         try:
+
             with self.conn.cursor() as cursor:
                 cursor.execute(selectsql)
             self.conn.commit()
@@ -371,14 +370,13 @@ class DB:
             print("模糊查询{0}表报错，报错信息如下：{1}".format(table_name,e))
         return cursor.fetchall()
 
+
+
 # if __name__=='__main__':
-    # A=DB()
-    # table_name = 'mf_order'
-    # select_datas = ['id']
-    # # aa = {'where_datas': {'merchant_id': '31', 'shop_id': 27, 'status': 5},  'section': {'created_at': '1636992000,1637251199'}, 'parallel': [{'user_drugs_name': '王', 'phone': '王'}],'sortkeydesc': 'created_at', 'limitcounts': 10,}
-    # aa={'where_datas': {'merchant_id': 31, 'status': 1}, 'sortkeydesc': 'created_at', 'limitcounts': '10'}
-    #
-    # re=A.MultiQuery(table_name,select_datas,**aa)
+#     A=DB()
+    # table_name = 'mf_merchant_user_drugs'
+    # select_datas = ['*']
+    # aa={'merchant_id': 31}
+    # re=A.MultiQuery(table_name,select_datas)
     # A.close()
     # print(re)
-    # # print(type(aa['parallel']))

@@ -32,20 +32,13 @@ appid=cf.get("logins","appid")
 cas_login_url=cf.get("logins","cas_login_url")
 app_login_url=cf.get("logins","app_login_url")
 
-logins = {
-          "account": account,
-          "password": password,
-          "appid": appid,
-          "cas_login_url": cas_login_url,
-          "app_login_url": app_login_url
-            }
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
     """蜜方系统-成员列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
-        token = "Bearer  " + Token().get_cas_token(logins)
+        token = "Bearer  " + Token.get_cas_token()
         h = {
 
             'Authorization': token
@@ -57,20 +50,10 @@ class Demo_API(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def GetMerchantID(self):
-        sqldb = DB()
-        tablename = 'mf_merchant_admin'
-        selectDate = ['id']
-        key = {'where_datas': {'account': logins['account']}}
-        merchantid = sqldb.exactselect(tablename, selectDate, **key)
-        sqldb.close()
-
-        return merchantid[0]['id']
-
     def ParamsAnalysis(self,params,remove):
 
-        merchant_id=self.GetMerchantID()
-        where_datas = {'merchant_id':merchant_id}
+        ID = Token.GetMerchantID()
+        where_datas = {'merchant_id':ID}
         aa = {'where_datas': where_datas}
 
         # 字符串转字典
@@ -130,31 +113,27 @@ class Demo_API(unittest.TestCase):
 
         '''获取数据库第一条详细数据'''
         sql = data['headers']
-        ID = self.GetMerchantID()
+        ID = Token.GetMerchantID()
         values = {'merchant_id': ID}
 
 
         '''判断参数是否为空，不为空则作为参数提交给sql执行'''
         body=eval(data['body'])
 
-        # if body['status']:
-        # #     pass
-        # # else:
-        #     values['status']=body['status']
 
+        # 以list形式返回字典所有的键
         if 'status' in body.keys():
             values['status'] = body['status']
         else:
             pass
 
+        # 获取字典指定键的值
         if body.get('search') == '':
             pass
         else:
             values['search']='%'+body['search']+'%'
 
         ab = sqldb.executevaluesql(sql,**values)
-
-
 
 
         '''切片取返回值前10条数据，如果不够十条，展示所有值'''
@@ -165,12 +144,9 @@ class Demo_API(unittest.TestCase):
             resdbid=resdbid[0:10:1]
 
 
-
         '''查询数据库返回总数'''
         dbtotal = len(dbresult)
         sqldb.close()
-
-
 
 
         if resp :
@@ -232,28 +208,21 @@ class Demo_API(unittest.TestCase):
 
             '''请求第一页所有id 和数据库前10条id断言'''
             self.assertListEqual(resid, resdbid, "接口返回第一页所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
-            print('请求第一页所有id:')
-            print(resid)
-            print('数据库第一页id:')
-            print(resdbid)
-            # self.assertListEqual()
+            print('请求第一页所有id:'+str(resid))
+            print('数据库第一页id:'+str(resdbid))
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
         else:
 
             resp = tuple(resp)
             '''无数据查询出断言'''
             self.assertEqual(resp, dbresult, "接口返回为空值：%s,数据库返回为空值：%s" % (resp, dbresult))
-            print('接口返回为空：')
-            print(resp)
-            print('数据库返回为空：')
-            print(dbresult)
+            print('接口返回为空：'+str(resp))
+            print('数据库返回为空：'+str(dbresult))
 
 
             '''请求返回code断言'''
@@ -262,10 +231,8 @@ class Demo_API(unittest.TestCase):
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
 
 

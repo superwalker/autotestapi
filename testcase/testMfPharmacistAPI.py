@@ -20,13 +20,14 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 cf = cparser.ConfigParser()
 cf.read(setting.TEST_CONFIG,encoding='UTF-8')
 ip=cf.get("sys","IP")
+login=cf.get("logins","account")
 
-logins = {"account": "ahdsdyf",
-          "password": "12345678",
-          "appid": "258634629320884225",
-          "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
-          "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
-            }
+# logins = {"account": "ahdsdyf",
+#           "password": "12345678",
+#           "appid": "258634629320884225",
+#           "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
+#           "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
+#             }
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
@@ -35,7 +36,7 @@ class Demo_API(unittest.TestCase):
         warnings.simplefilter("ignore", ResourceWarning)
 
 
-        token = "Bearer  " + Token().get_cas_token(logins)
+        token = "Bearer  " + Token.get_cas_token()
         h = {
 
             'Authorization': token
@@ -66,9 +67,8 @@ class Demo_API(unittest.TestCase):
         respon=self.result
 
 
-
         sqldb = DB()
-        sql = data['headers']+"'"+str(logins['account'])+"'"
+        sql = data['headers']+"'"+str(login)+"'"
         dbresult = sqldb.executesql(sql)
         dbres = dbresult[0]
 

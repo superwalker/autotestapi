@@ -1,10 +1,26 @@
 import requests
 from db_fixture.mysql_db import DB
+import configparser as cparser
+from config import setting
+import os,sys
 
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+cf = cparser.ConfigParser()
+cf.read(setting.TEST_CONFIG,encoding='UTF-8')
+ip=cf.get("sys","IP")
+
+logins=cf.items('logins')
+
+logins=dict(logins)
 
 class Token:
 
-    def get_cas_token(self, logins):
+    def __init__(self):
+
+        self.logins=logins
+
+    @classmethod
+    def get_cas_token(self):
         """
         使用统一账号登录的系统，获取其token
         for example: logins = {"account": erp_account, "password": erp_password, "appid": erp_appid, "cas_login_url": erp_cas_login_url, "app_login_url": erp_app_login_url}
@@ -56,4 +72,17 @@ class Token:
         token = requests.post(url=logins["login_url"], data=login_data).json()['token']
         return token
 
+    @classmethod
+    def GetMerchantID(cls):
+        sqldb = DB()
+        tablename = 'mf_merchant_admin'
+        selectDate = ['id']
+        key = {'where_datas': {'account': logins['account']}}
+        merchantid = sqldb.exactselect(tablename, selectDate, **key)
+        sqldb.close()
 
+        return merchantid[0]['id']
+
+if __name__=='__main__':
+    A=Token.get_cas_token()
+    print(A)

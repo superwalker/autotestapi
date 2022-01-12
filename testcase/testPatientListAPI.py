@@ -24,21 +24,14 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 cf = cparser.ConfigParser()
 cf.read(setting.TEST_CONFIG,encoding='UTF-8')
 ip=cf.get("sys","IP")
-
-logins = {"account": "ahdsdyf",
-          "password": "12345678",
-          "appid": "258634629320884225",
-          "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
-          "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
-            }
-
+login=cf.get("logins","account")
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
     """蜜方系统-就诊人列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
-        token = "Bearer  " + Token().get_cas_token(logins)
+        token = "Bearer  " + Token.get_cas_token()
         h = {
 
             'Authorization': token
@@ -55,7 +48,7 @@ class Demo_API(unittest.TestCase):
         sqldb = DB()
         tablename='mf_merchant_admin'
         selectDate=['id']
-        key= {'where_datas':{'account':logins['account']}}
+        key= {'where_datas':{'account':login}}
         merchantid=sqldb.exactselect(tablename,selectDate,**key)
         where_datas = {'merchant_id':merchantid[0]['id']}
         aa = {'where_datas': where_datas}
@@ -165,11 +158,6 @@ class Demo_API(unittest.TestCase):
             self.assertEqual(respon['created_at'], dbres['created_at'],"接口返回created_at:%s ,数据库返回created_at:%s" % (respon['created_at'], dbres['created_at']))
             self.assertEqual(respon['updated_at'], dbres['updated_at'],"接口返回updated_at:%s ,数据库返回updated_at:%s" % (respon['updated_at'], dbres['updated_at']))
 
-            # print(type(respon))
-            # print(type(dbres))
-            # if self.assertDictEqual(respon,dbres,"111"):
-            #     print('首条数据断言成功')
-
 
             '''请求返回code断言'''
             self.assertEqual(str(re.status_code),data['status_code'] , "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, data['status_code']))
@@ -177,28 +165,21 @@ class Demo_API(unittest.TestCase):
 
             '''请求第一页所有id 和数据库前10条id断言'''
             self.assertListEqual(resid, resdbid, "接口返回第一页所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
-            print('请求第一页所有id:')
-            print(resid)
-            print('数据库第一页id:')
-            print(resdbid)
-            # self.assertListEqual()
+            print('请求第一页所有id:'+str(resid))
+            print('数据库第一页id:'+str(resdbid))
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
         else:
 
             resp = tuple(resp)
             '''无数据查询出断言'''
             self.assertEqual(resp, dbresult, "接口返回为空值：%s,数据库返回为空值：%s" % (resp, dbresult))
-            print('接口返回为空：')
-            print(resp)
-            print('数据库返回为空：')
-            print(dbresult)
+            print('接口返回为空：'+str(resp))
+            print('数据库返回为空：'+str(dbresult))
 
 
             '''请求返回code断言'''
@@ -207,12 +188,8 @@ class Demo_API(unittest.TestCase):
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
-
-
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
 if __name__=='__main__':
     unittest.main()

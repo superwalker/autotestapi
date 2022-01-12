@@ -22,23 +22,15 @@ ip=cf.get("sys","IP")
 
 testData = ReadExcel(setting.SOURCE_FILE, "Sheet1").read_data()
 
-logins = {"account": "ahdsdyf",
-                  "password": "12345678",
-                  "appid": "258634629320884225",
-                  "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
-                  "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
-                    }
-
 @ddt.ddt
 class MF_API(unittest.TestCase):
     """蜜方系统-处方记录列表"""
 
     def setUp(self):
+
         warnings.simplefilter("ignore", ResourceWarning)
 
-
-
-        token = "Bearer  " + Token().get_cas_token(logins)
+        token = "Bearer  " + Token.get_cas_token()
         h = {
 
             'Authorization': token
@@ -52,13 +44,12 @@ class MF_API(unittest.TestCase):
         # sqldb.close(self)
         pass
 
+
+
     def ParamsAnalysis(self,params):
-        sqldb = DB()
-        tablename = 'mf_merchant_admin'
-        selectDate = ['id']
-        key = {'where_datas': {'account': logins['account']}}
-        merchantid = sqldb.exactselect(tablename, selectDate, **key)
-        where_datas = {'merchant_id': merchantid[0]['id']}
+
+        ID = Token.GetMerchantID()
+        where_datas = {'merchant_id':ID }
         aa = {'where_datas': where_datas}
 
         # 字符串转字典
@@ -113,11 +104,6 @@ class MF_API(unittest.TestCase):
 
     @ddt.data(*testData)
     def test_api(self,data):
-
-        # # 接口请求响应时间
-        #   # print(re.elapsed)
-        # #接口请求返回大小
-        #   print(len(re.content))
 
         #修改测试报告模板名称
         self._testMethodName = data['ID'] + ':' + data['UseCase']
@@ -192,10 +178,9 @@ class MF_API(unittest.TestCase):
             self.assertEqual(disease_name, dbres['disease_name'],"接口返回【病情描述disease_name】:%s ,数据库返回【病情描述disease_name】:%s" % (disease_name, dbres['disease_name']))
             self.assertEqual(resp['status'], dbres['status'],"接口返回【订单状态status】:%s ,数据库返回【订单状态status】:%s" % (resp['status'], dbres['status']))
             self.assertEqual(resp['remark'], dbres['remark'],"接口返回【备注remark】:%s ,数据库返回【备注remark】:%s" % (resp['remark'], dbres['remark']))
-            print('首条数据返回id：')
-            print(resp['id'])
-            print('数据库首条数据返回id：')
-            print(dbres['id'])
+            print('首条数据返回id：'+str(resp['id']))
+            print('数据库首条数据返回id：'+str(dbres['id']))
+
 
             '''请求返回code断言'''
             self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
@@ -203,17 +188,13 @@ class MF_API(unittest.TestCase):
 
             '''请求第一页所有id 和数据库前10条id断言'''
             self.assertListEqual(resid, resdbid, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (resid, resdbid))
-            print('请求第一页所有id:')
-            print (resid)
-            print('数据库第一页id:')
-            print(resdbid)
+            print('请求第一页所有id:'+str(resid))
+            print('数据库第一页id:'+str(resdbid))
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
 
         else:
@@ -244,10 +225,8 @@ class MF_API(unittest.TestCase):
 
             '''请求返回数据总数和数据库数据总数断言'''
             self.assertEqual(total, dbtotal, "接口返回所有【id】:%s ,数据库返回所有【id】:%s" % (total, dbtotal))
-            print('请求返回数据总数:')
-            print(total)
-            print('数据库数据总数:')
-            print(dbtotal)
+            print('请求返回数据总数:'+str(total))
+            print('数据库数据总数:'+str(dbtotal))
 
 
 # if __name__=='__main__':
