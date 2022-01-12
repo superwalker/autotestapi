@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 # _*_ coding:utf-8 _*_
 __author__ = 'walker'
 
 
 import os,sys
-sys.path.append(os.path.dirname(__file__))
+# sys.path.append(os.path.dirname(__file__))
 from config import setting
 import unittest,time
 # from lib.HTMLTestRunner import HTMLTestRunner
