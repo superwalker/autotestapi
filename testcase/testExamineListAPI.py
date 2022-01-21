@@ -8,8 +8,6 @@ import unittest,requests,ddt
 from config import setting
 from lib.readexcel import ReadExcel
 from lib.sendrequests import SendRequests
-# from lib.writeexcel import WriteExcel
-# import json
 import warnings
 from lib.GetToken import Token
 import configparser as cparser
@@ -33,7 +31,7 @@ ip=cf.get("sys","IP")
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
-    """蜜方系统-就诊人列表"""
+    """xx系统-就诊人列表"""
 
     @classmethod
     def setUpClass(cls):

@@ -72,8 +72,8 @@ class WriteExcel():
         self.wb.save(self.filename)
 
 
-if __name__ == "__main__":
-    fileName = "../report/excelReport/DemoPharmacistAPITestCase.xlsx"
-    print(openpyxl.__version__)
-    we = WriteExcel(fileName)
-    we.write_data(2, 12, "hi zhouyu")
+# if __name__ == "__main__":
+    # fileName = "../report/excelReport/DemoPharmacistAPITestCase.xlsx"
+    # print(openpyxl.__version__)
+    # we = WriteExcel(fileName)
+    # we.write_data(2, 12, "hi zhouyu")

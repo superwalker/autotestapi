@@ -28,7 +28,7 @@ login=cf.get("logins","account")
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
-    """蜜方系统-就诊人列表"""
+    """xx系统-就诊人列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
         token = "Bearer  " + Token.get_cas_token()

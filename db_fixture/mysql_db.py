@@ -231,8 +231,7 @@ class DB:
             print("执行sql语句，报错信息如下：{0}".format(e))
         return cursor.fetchall()
 
-        # 执行sql语句
-
+    # 执行带参数的sql语句
     def executevaluesql(self, sql, **key):
         """
         :notes:执行sql语句，并获取结果
@@ -353,8 +352,13 @@ class DB:
                 selectsql=selectsql+' ORDER BY '+keys[key] + ' asc'
             # print(selectsql)
 
+            if key=="multipleorder":
+                selectsql=selectsql+ 'ORDER BY '+keys[key]
+
             if key=="limitcounts":
                 selectsql=selectsql+'  LIMIT '+str(keys[key])
+
+
 
 
         print('执行sql为： '+str(selectsql))

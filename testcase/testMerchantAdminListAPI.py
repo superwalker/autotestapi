@@ -35,7 +35,7 @@ app_login_url=cf.get("logins","app_login_url")
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
-    """蜜方系统-成员列表"""
+    """XX系统-成员列表"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
         token = "Bearer  " + Token.get_cas_token()
@@ -77,10 +77,12 @@ class Demo_API(unittest.TestCase):
             where_datas.pop('phone')
 
         # 固定参数 添加，这里添加可处理传值排序问题
-        aa['sortkeydesc'] = 'created_at'
+        # aa['sortkeydesc'] = 'created_at '
         # aa['limitcounts'] = where_datas.pop('limit')
+        aa['multipleorder'] = ' created_at desc, id desc'
         # 更新元素值
         aa['where_datas'] = where_datas
+
 
         return aa
 
@@ -169,9 +171,12 @@ class Demo_API(unittest.TestCase):
 
             role_name=','.join(role_name)
 
+            print(role_name)
 
             '''获取数据库返回第一条数据'''
             dbres = ab[0]
+
+            print(dbres['role_name'])
 
             # '''处理断言类型格式不符'''
             dbres['created_at']=str(dbres['created_at'])

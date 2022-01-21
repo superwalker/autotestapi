@@ -22,16 +22,10 @@ cf.read(setting.TEST_CONFIG,encoding='UTF-8')
 ip=cf.get("sys","IP")
 login=cf.get("logins","account")
 
-# logins = {"account": "ahdsdyf",
-#           "password": "12345678",
-#           "appid": "258634629320884225",
-#           "cas_login_url": "http://cas-backend.lyky.xyz/auth/login",
-#           "app_login_url": "http://mf-backend.lyky.xyz/backend/auth/login"
-#             }
 
 @ddt.ddt
 class Demo_API(unittest.TestCase):
-    """蜜方系统-药师资质"""
+    """XX系统-药师资质"""
     def setUp(self):
         warnings.simplefilter("ignore", ResourceWarning)
 
@@ -104,11 +98,6 @@ class Demo_API(unittest.TestCase):
             '''请求返回code断言'''
             self.assertEqual(re.status_code, 200, "接口返回【状态码】:%s ,预期返回【状态码】:%s" % (re.status_code, 200))
             print('请求返回code:' + str(re.status_code))
-
-
-
-
-
 
 
 

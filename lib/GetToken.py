@@ -31,8 +31,14 @@ class Token:
         :param logins[cas_login_url]: 统一账号的登录地址, 数据类型是str
         :param logins[app_login_url]: 重定向到应用的登录地址, 数据类型是str
         """
+        # print(logins)
         login_cas_data = {'account': logins["account"], 'password': logins["password"], 'appid': logins["appid"]}
-        cas_token = requests.post(url=logins["cas_login_url"], data=login_cas_data).json()['token']
+
+        try:
+            cas_token = requests.post(url=logins["cas_login_url"], data=login_cas_data).json()['token']
+        except Exception as  e:
+            print("失败: " + str(e))
+
         login_app_data = {'token': cas_token}
         app_token = requests.post(url=logins["app_login_url"], data=login_app_data).json()['token']
         return app_token
@@ -84,5 +90,6 @@ class Token:
         return merchantid[0]['id']
 
 if __name__=='__main__':
+
     A=Token.get_cas_token()
     print(A)

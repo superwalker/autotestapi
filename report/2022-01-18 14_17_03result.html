@@ -1,0 +1,1290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>蜜方系统接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link type="image/png" href="https://cdn.nlark.com/yuque/0/2021/png/304399/1634873859350-avatar/1c38c4bf-658d-4aa6-bbf5-d29891dba5d9.png" rel="shortcut icon">
+    <link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    
+<style type="text/css" media="screen">
+body        { font-family: Microsoft YaHei,Tahoma,arial,helvetica,sans-serif;padding: 20px; font-size: 80%; }
+table       { font-size: 100%; }
+
+/* -- heading ---------------------------------------------------------------------- */
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- report ------------------------------------------------------------------------ */
+#total_row  { font-weight: bold; }
+.passCase   { color: #5cb85c; }
+.failCase   { color: #d9534f; font-weight: bold; }
+.errorCase  { color: #f0ad4e; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+</style>
+
+
+    <style>
+        .title-icon{
+            position: absolute;
+            right: 50%;
+            top: 0;
+            width: 120px;
+            height: 40px
+        }
+    </style>
+
+</head>
+<body >
+
+<img class="title-icon" src="https://oa.lyky.cn/img/login_logo.07578554.png"/>
+
+<script language="javascript" type="text/javascript">
+output_list = Array();
+
+/*level 调整增加只显示通过用例的分类 --Findyou
+0:Summary //all hiddenRow
+1:Failed  //pt hiddenRow, ft none
+2:Pass    //pt none, ft hiddenRow
+3:All     //pt none, ft none
+*/
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level == 2 || level == 0 ) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level < 2) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+    }
+
+    //加入【详细】切换文字变化 --Findyou
+    detail_class=document.getElementsByClassName('detail');
+   //console.log(detail_class.length)
+   if (level == 3) {
+      for (var i = 0; i < detail_class.length; i++){
+         detail_class[i].innerHTML="收起"
+      }
+   }
+   else{
+         for (var i = 0; i < detail_class.length; i++){
+         detail_class[i].innerHTML="详细"
+      }
+   }
+}
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        //ID修改 点 为 下划线 -Findyou
+        tid0 = 't' + cid.substr(1) + '_' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        //修改点击无法收起的BUG，加入【详细】切换文字变化 --Findyou
+        if (toHide) {
+            document.getElementById(tid).className = 'hiddenRow';
+            document.getElementById(cid).innerText = "详细"
+        }
+        else {
+            document.getElementById(tid).className = '';
+            document.getElementById(cid).innerText = "收起"
+        }
+    }
+}
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+</script>
+<div class='heading'>
+<h1 style="font-family: Microsoft YaHei">蜜方系统接口自动化测试报告</h1>
+<p class='attribute'><strong>测试人员 : </strong> walker</p>
+<p class='attribute'><strong>自动化开始时间 : </strong> 2022-01-18 14:17:03</p>
+<p class='attribute'><strong>合计耗时 : </strong> 0:00:26.836078</p>
+<p class='attribute'><strong>测试结果 : </strong> 共 41，通过 41，通过率= 100.00%</p>
+<p class='attribute'><strong>测试访问域名 : </strong> http://mf-backend.lyky.cn/</p>
+
+<p class='description'>环境：windows 10 浏览器：chrome</p>
+</div>
+
+
+
+<p id='show_detail_line'>
+<a class="btn btn-primary" href='javascript:showCase(0)'>概要[ 100.00% ]</a>
+<a class="btn btn-danger" href='javascript:showCase(1)'>失败[ 0 ]</a>
+<a class="btn btn-success" href='javascript:showCase(2)'>通过[ 41 ]</a>
+<a class="btn btn-info" href='javascript:showCase(3)'>所有[ 41 ]</a>
+</p>
+<table id='result_table' class="table table-condensed table-bordered table-hover">
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row' class="text-center success" style="font-weight: bold;font-size: 14px;">
+    <td>用例集/测试用例</td>
+    <td>总计</td>
+    <td>通过</td>
+    <td>失败</td>
+    <td>错误</td>
+    <td>详细</td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>testAPI.MF_API: 蜜方系统-处方记录列表</td>
+    <td class="text-center">12</td>
+    <td class="text-center">12</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c1',12)" class="detail" id='c1'>详细</a></td>
+</tr>
+
+<tr id='pt1_1' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_001:查询所有数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_1'>通过</button>
+    <div id='div_pt1_1' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_1'>通过</button>
+    <div id='div_pt1_1' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_1: ******* 正在执行用例 -&gt;query_001 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：120191数据库首条数据返回id：120191
+请求返回code:200预期返回code:200
+请求第一页所有id:[120191, 120188, 120186, 120176, 120173, 120163, 120159, 120158, 120149, 120146]数据库第一页id:[120191, 120188, 120186, 120176, 120173, 120163, 120159, 120158, 120149, 120146]
+请求返回数据总数:13070数据库数据总数:13070
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_2' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_002:查询手机号为18856009131的处方</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_2' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_2'>通过</button>
+    <div id='div_pt1_2' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_2' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_2'>通过</button>
+    <div id='div_pt1_2' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_2: ******* 正在执行用例 -&gt;query_002 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：96588数据库首条数据返回id：96588
+请求返回code:200预期返回code:200
+请求第一页所有id:[96588, 22593, 11866, 11865, 11841, 11325, 11265, 10484, 10471, 10322]数据库第一页id:[96588, 22593, 11866, 11865, 11841, 11325, 11265, 10484, 10471, 10322]
+请求返回数据总数:15数据库数据总数:15
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_3' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_003:查询处方状态未【待平台审核】的订单</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_3' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_3'>通过</button>
+    <div id='div_pt1_3' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_3' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_3'>通过</button>
+    <div id='div_pt1_3' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_3: ******* 正在执行用例 -&gt;query_003 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：119859数据库首条数据返回id：119859
+请求返回code:200预期返回code:200
+请求第一页所有id:[119859, 119220, 119122, 116977, 115929, 115705, 112113, 110677, 107403, 106728]数据库第一页id:[119859, 119220, 119122, 116977, 115929, 115705, 112113, 110677, 107403, 106728]
+请求返回数据总数:76数据库数据总数:76
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_4' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_004:查询处方状态为【待药师开方】，药店为【安徽省立大药房-皖河路店】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_4' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_4'>通过</button>
+    <div id='div_pt1_4' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_4' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_4'>通过</button>
+    <div id='div_pt1_4' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_4: ******* 正在执行用例 -&gt;query_004 *********
+re.status_code==200 and len(respon)==0
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200,预期返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_5' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_005:查询日期在【2022/01/01-2022/01/18】的处方单</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_5' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_5'>通过</button>
+    <div id='div_pt1_5' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_5' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_5'>通过</button>
+    <div id='div_pt1_5' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_5: ******* 正在执行用例 -&gt;query_005 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：120191数据库首条数据返回id：120191
+请求返回code:200预期返回code:200
+请求第一页所有id:[120191, 120188, 120186, 120176, 120173, 120163, 120159, 120158, 120149, 120146]数据库第一页id:[120191, 120188, 120186, 120176, 120173, 120163, 120159, 120158, 120149, 120146]
+请求返回数据总数:2175数据库数据总数:2175
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_6' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_006:查询日期在【2022/01/01-2022/01/18】店铺：【安徽省立大药房-皖河路店】 状态：【已完成】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_6' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_6'>通过</button>
+    <div id='div_pt1_6' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_6' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_6'>通过</button>
+    <div id='div_pt1_6' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_6: ******* 正在执行用例 -&gt;query_006 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：120159数据库首条数据返回id：120159
+请求返回code:200预期返回code:200
+请求第一页所有id:[120159, 119771, 119752, 119714, 119524, 119430, 119411, 119286, 119224, 118975]数据库第一页id:[120159, 119771, 119752, 119714, 119524, 119430, 119411, 119286, 119224, 118975]
+请求返回数据总数:161数据库数据总数:161
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_7' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_007: 查询用药人姓名为【郑现桃】的处方</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_7' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_7'>通过</button>
+    <div id='div_pt1_7' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_7' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_7'>通过</button>
+    <div id='div_pt1_7' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_7: ******* 正在执行用例 -&gt;query_007 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：96588数据库首条数据返回id：96588
+请求返回code:200预期返回code:200
+请求第一页所有id:[96588, 22593, 11866, 11865, 11841, 11325, 11265, 10484, 10471, 10322]数据库第一页id:[96588, 22593, 11866, 11865, 11841, 11325, 11265, 10484, 10471, 10322]
+请求返回数据总数:25数据库数据总数:25
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_8' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_008:查询日期【111】，店铺【安徽省立大药房-皖河路店】，用药人【郑现桃】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_8' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_8'>通过</button>
+    <div id='div_pt1_8' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_8' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_8'>通过</button>
+    <div id='div_pt1_8' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_8: ******* 正在执行用例 -&gt;query_008 *********
+re.status_code != 200 and len(resp)==0
+请求返回code:400,预期返回code:400
+请求返回的message: start time 必须是数字
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_9' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_009:查询用药人姓名为【郑】的处方</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_9' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_9'>通过</button>
+    <div id='div_pt1_9' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_9' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_9'>通过</button>
+    <div id='div_pt1_9' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_9: ******* 正在执行用例 -&gt;query_009 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：119093数据库首条数据返回id：119093
+请求返回code:200预期返回code:200
+请求第一页所有id:[119093, 118923, 117334, 117119, 116463, 115975, 113838, 113520, 112448, 111645]数据库第一页id:[119093, 118923, 117334, 117119, 116463, 115975, 113838, 113520, 112448, 111645]
+请求返回数据总数:145数据库数据总数:145
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_10' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_010:查询手机号为158的处方</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_10' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_10'>通过</button>
+    <div id='div_pt1_10' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_10' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_10'>通过</button>
+    <div id='div_pt1_10' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_10: ******* 正在执行用例 -&gt;query_010 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：119935数据库首条数据返回id：119935
+请求返回code:200预期返回code:200
+请求第一页所有id:[119935, 119672, 119653, 119459, 119363, 118915, 118861, 118772, 118575, 118204]数据库第一页id:[119935, 119672, 119653, 119459, 119363, 118915, 118861, 118772, 118575, 118204]
+请求返回数据总数:572数据库数据总数:572
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_11' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_010:传递错误的end_time 参数</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_11' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_11'>通过</button>
+    <div id='div_pt1_11' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_11' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_11'>通过</button>
+    <div id='div_pt1_11' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_11: ******* 正在执行用例 -&gt;query_010 *********
+re.status_code != 200 and len(resp)==0
+请求返回code:400,预期返回code:400
+请求返回的message: end time 必须是数字
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt1_12' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_011:查询不存在的状态值</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt1_12' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt1_12'>通过</button>
+    <div id='div_pt1_12' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt1_12' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt1_12'>通过</button>
+    <div id='div_pt1_12' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt1_12: ******* 正在执行用例 -&gt;query_011 *********
+re.status_code==200 and len(respon) &gt; 0
+首条数据返回id：120176数据库首条数据返回id：120176
+请求返回code:200预期返回code:200
+请求第一页所有id:[120176, 120149, 119228, 10014]数据库第一页id:[120176, 120149, 119228, 10014]
+请求返回数据总数:4数据库数据总数:4
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>testExamineListAPI.Demo_API: 蜜方系统-就诊人列表</td>
+    <td class="text-center">11</td>
+    <td class="text-center">11</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c2',11)" class="detail" id='c2'>详细</a></td>
+</tr>
+
+<tr id='pt2_1' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_001:查询所有数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_1'>通过</button>
+    <div id='div_pt2_1' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_1'>通过</button>
+    <div id='div_pt2_1' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_1: ******* 正在执行用例 -&gt;query_001 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[120191, 120186, 119841, 118994, 118522, 115108, 114438, 113886, 111880, 108441]
+数据库第一页id:[120191, 120186, 119841, 118994, 118522, 115108, 114438, 113886, 111880, 108441]
+请求返回数据总数:78
+数据库数据总数:78
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_2' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_002:查询【2022-01-01 - 2022-01-15】日期内的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_2' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_2'>通过</button>
+    <div id='div_pt2_2' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_2' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_2'>通过</button>
+    <div id='div_pt2_2' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_2: ******* 正在执行用例 -&gt;query_002 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[115108, 114438, 113886, 111880, 108441, 108437, 108421, 107159, 106717, 106695]
+数据库第一页id:[115108, 114438, 113886, 111880, 108441, 108437, 108421, 107159, 106717, 106695]
+请求返回数据总数:13
+数据库数据总数:13
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_3' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_003:查询日期【111】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_3' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_3'>通过</button>
+    <div id='div_pt2_3' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_3' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_3'>通过</button>
+    <div id='div_pt2_3' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_3: ******* 正在执行用例 -&gt;query_003 *********
+re.status_code != 200 and len(resp)==0
+请求返回code:400,预期返回code:400
+请求返回的message: start time 必须是数字
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_4' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_004:查询条件【zhou】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_4' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_4'>通过</button>
+    <div id='div_pt2_4' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_4' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_4'>通过</button>
+    <div id='div_pt2_4' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_4: ******* 正在执行用例 -&gt;query_004 *********
+re.status_code==200 and len(resp)==0
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200,预期返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_5' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_005:查询条件【赵文言】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_5' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_5'>通过</button>
+    <div id='div_pt2_5' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_5' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_5'>通过</button>
+    <div id='div_pt2_5' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_5: ******* 正在执行用例 -&gt;query_005 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[27220]
+数据库第一页id:[27220]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_6' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_006:查询条件【13】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_6' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_6'>通过</button>
+    <div id='div_pt2_6' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_6' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_6'>通过</button>
+    <div id='div_pt2_6' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_6: ******* 正在执行用例 -&gt;query_006 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[118994, 115108, 107159, 106695, 106473, 104608, 100568, 99872, 97296, 89781]
+数据库第一页id:[118994, 115108, 107159, 106695, 106473, 104608, 100568, 99872, 97296, 89781]
+请求返回数据总数:29
+数据库数据总数:29
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_7' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_007:查询条件【177】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_7' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_7'>通过</button>
+    <div id='div_pt2_7' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_7' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_7'>通过</button>
+    <div id='div_pt2_7' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_7: ******* 正在执行用例 -&gt;query_007 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[120191, 90036, 73944]
+数据库第一页id:[120191, 90036, 73944]
+请求返回数据总数:3
+数据库数据总数:3
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_8' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_008:查询条件【！@#￥%……&&】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_8' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_8'>通过</button>
+    <div id='div_pt2_8' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_8' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_8'>通过</button>
+    <div id='div_pt2_8' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_8: ******* 正在执行用例 -&gt;query_008 *********
+re.status_code==200 and len(resp)==0
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200,预期返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_9' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_009:查询日期【2022-01-01 - 2022-01-18】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_9' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_9'>通过</button>
+    <div id='div_pt2_9' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_9' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_9'>通过</button>
+    <div id='div_pt2_9' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_9: ******* 正在执行用例 -&gt;query_009 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[120191, 120186, 119841, 118994, 118522, 115108, 114438, 113886, 111880, 108441]
+数据库第一页id:[120191, 120186, 119841, 118994, 118522, 115108, 114438, 113886, 111880, 108441]
+请求返回数据总数:18
+数据库数据总数:18
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_10' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_010:查询【2022-01-01 - 2022-01-18】和手机号【13956995716】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_10' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_10'>通过</button>
+    <div id='div_pt2_10' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_10' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_10'>通过</button>
+    <div id='div_pt2_10' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_10: ******* 正在执行用例 -&gt;query_010 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[106695, 106473]
+数据库第一页id:[106695, 106473]
+请求返回数据总数:2
+数据库数据总数:2
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt2_11' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_011:查询【2021-12-25 - 2021-12-31】和姓名【侯倩倩】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt2_11' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt2_11'>通过</button>
+    <div id='div_pt2_11' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt2_11' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt2_11'>通过</button>
+    <div id='div_pt2_11' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt2_11: ******* 正在执行用例 -&gt;query_011 *********
+请求返回code:200,预期返回code:200
+请求第一页所有id:[98417]
+数据库第一页id:[98417]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>testMerchantAdminListAPI.Demo_API: 蜜方系统-成员列表</td>
+    <td class="text-center">10</td>
+    <td class="text-center">10</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c3',10)" class="detail" id='c3'>详细</a></td>
+</tr>
+
+<tr id='pt3_1' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_001:查询所有数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_1'>通过</button>
+    <div id='div_pt3_1' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_1'>通过</button>
+    <div id='div_pt3_1' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_1: ******* 正在执行用例 -&gt;query_001 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 AND status like '%%'ORDER BY  created_at desc, id desc
+药师,管理员
+药师,管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[288, 229, 227, 226, 225, 222, 219, 216, 215, 205]
+数据库第一页id:[288, 229, 227, 226, 225, 222, 219, 216, 215, 205]
+请求返回数据总数:36
+数据库数据总数:36
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_2' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_002:查询状态为【正常】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_2' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_2'>通过</button>
+    <div id='div_pt3_2' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_2' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_2'>通过</button>
+    <div id='div_pt3_2' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_2: ******* 正在执行用例 -&gt;query_002 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 AND status like '%1%'ORDER BY  created_at desc, id desc
+药师,管理员
+药师,管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[288, 229, 227, 226, 225, 222, 219, 216, 215, 205]
+数据库第一页id:[288, 229, 227, 226, 225, 222, 219, 216, 215, 205]
+请求返回数据总数:36
+数据库数据总数:36
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_3' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_003:查询状态为【禁用】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_3' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_3'>通过</button>
+    <div id='div_pt3_3' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_3' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_3'>通过</button>
+    <div id='div_pt3_3' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_3: ******* 正在执行用例 -&gt;query_003 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 AND status like '%2%'ORDER BY  created_at desc, id desc
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_4' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_004:查询手机号为【13956302654】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_4' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_4'>通过</button>
+    <div id='div_pt3_4' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_4' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_4'>通过</button>
+    <div id='div_pt3_4' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_4: ******* 正在执行用例 -&gt;query_004 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%13956302654%' or phone like '%13956302654%' )ORDER BY  created_at desc, id desc
+管理员
+管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[1]
+数据库第一页id:[1]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_5' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_005:模糊查询手机号为【13】开头的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_5' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_5'>通过</button>
+    <div id='div_pt3_5' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_5' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_5'>通过</button>
+    <div id='div_pt3_5' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_5: ******* 正在执行用例 -&gt;query_005 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%13%' or phone like '%13%' )ORDER BY  created_at desc, id desc
+药师,管理员
+药师,管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[288, 219, 204, 201, 198, 196, 195, 193, 192, 183]
+数据库第一页id:[288, 219, 204, 201, 198, 196, 195, 193, 192, 183]
+请求返回数据总数:12
+数据库数据总数:12
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_6' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_006:查询不存在的手机号【13876582762】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_6' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_6'>通过</button>
+    <div id='div_pt3_6' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_6' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_6'>通过</button>
+    <div id='div_pt3_6' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_6: ******* 正在执行用例 -&gt;query_006 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%13876582762%' or phone like '%13876582762%' )ORDER BY  created_at desc, id desc
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_7' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_007:查询存在的账号【安徽省立药房】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_7' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_7'>通过</button>
+    <div id='div_pt3_7' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_7' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_7'>通过</button>
+    <div id='div_pt3_7' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_7: ******* 正在执行用例 -&gt;query_007 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%安徽省立药房%' or phone like '%安徽省立药房%' )ORDER BY  created_at desc, id desc
+管理员
+管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[1]
+数据库第一页id:[1]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_8' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_008:查询不存在的账号【安徽省立药房33】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_8' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_8'>通过</button>
+    <div id='div_pt3_8' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_8' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_8'>通过</button>
+    <div id='div_pt3_8' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_8: ******* 正在执行用例 -&gt;query_008 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%安徽省立药房33%' or phone like '%安徽省立药房33%' )ORDER BY  created_at desc, id desc
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_9' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_009:模糊查询账号【安徽】的数据</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_9' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_9'>通过</button>
+    <div id='div_pt3_9' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_9' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_9'>通过</button>
+    <div id='div_pt3_9' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_9: ******* 正在执行用例 -&gt;query_009 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 and (name like '%安徽%' or phone like '%安徽%' )ORDER BY  created_at desc, id desc
+管理员
+管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[1]
+数据库第一页id:[1]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt3_10' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_010:联合查询【正常】【安徽省立药房】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt3_10' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt3_10'>通过</button>
+    <div id='div_pt3_10' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt3_10' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt3_10'>通过</button>
+    <div id='div_pt3_10' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt3_10: ******* 正在执行用例 -&gt;query_010 *********
+执行sql为： SELECT * FROM mf_merchant_admin WHERE 1=1  AND merchant_id = 1 AND status like '%1%' and (name like '%安徽省立药房%' or phone like '%安徽省立药房%' )ORDER BY  created_at desc, id desc
+管理员
+管理员
+请求返回code:200,预期返回code:200
+请求第一页所有id:[1]
+数据库第一页id:[1]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>testMfPharmacistAPI.Demo_API: 蜜方系统-药师资质</td>
+    <td class="text-center">1</td>
+    <td class="text-center">1</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c4',1)" class="detail" id='c4'>详细</a></td>
+</tr>
+
+<tr id='pt4_1' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_001:查询药店药师资质</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt4_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt4_1'>通过</button>
+    <div id='div_pt4_1' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt4_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt4_1'>通过</button>
+    <div id='div_pt4_1' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt4_1: ******* 正在执行用例 -&gt;query_001 *********
+数据返回值：
+{'id': 140, 'merchant_id': 1, 'admin_id': 1, 'name': '王莉莉', 'card_no': '34260119770123002X', 'register_no': '342220012663', 'qualification_no': '201910026340003755', 'company_name': '安徽省立药房连锁有限公司', 'register_url': 'upload/mf/file/2021-08-31/9e4130b04996c4384da1a8ccf02c6123.jpeg', 'qualification_url': 'upload/mf/file/2021-08-31/3228b898fe1a769e5467bf79703feb61.jpeg', 'sign_url': 'upload/mf/file/2021-08-31/1ae26e1ab9a0316639b6d9e1b50c067e.png', 'created_at': '2021-08-31 11:15:31', 'updated_at': '2021-08-31 11:52:11'}
+数据库首条数据返回值：
+{'id': 140, 'merchant_id': 1, 'name': '王莉莉', 'card_no': '34260119770123002X', 'register_no': '342220012663', 'qualification_no': '201910026340003755', 'company_name': '安徽省立药房连锁有限公司', 'sign_url': 'upload/mf/file/2021-08-31/1ae26e1ab9a0316639b6d9e1b50c067e.png', 'register_url': 'upload/mf/file/2021-08-31/9e4130b04996c4384da1a8ccf02c6123.jpeg', 'qualification_url': 'upload/mf/file/2021-08-31/3228b898fe1a769e5467bf79703feb61.jpeg'}
+请求返回code:200
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr class='passClass warning'>
+    <td>testPatientListAPI.Demo_API: 蜜方系统-就诊人列表</td>
+    <td class="text-center">7</td>
+    <td class="text-center">7</td>
+    <td class="text-center">0</td>
+    <td class="text-center">0</td>
+    <td class="text-center"><a href="javascript:showClassDetail('c5',7)" class="detail" id='c5'>详细</a></td>
+</tr>
+
+<tr id='pt5_1' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_001:查询手机号为18919624868的就诊人信息</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_1' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_1'>通过</button>
+    <div id='div_pt5_1' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_1' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_1'>通过</button>
+    <div id='div_pt5_1' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_1: ******* 正在执行用例 -&gt;query_001 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%18919624868%' or phone like '%18919624868%' ) ORDER BY created_at desc
+请求返回code:200,预期返回code:200
+请求第一页所有id:[3]
+数据库第一页id:[3]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_2' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_002:模糊查询_查询手机号为13的就诊人信息</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_2' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_2'>通过</button>
+    <div id='div_pt5_2' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_2' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_2'>通过</button>
+    <div id='div_pt5_2' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_2: ******* 正在执行用例 -&gt;query_002 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%13%' or phone like '%13%' ) ORDER BY created_at desc
+请求返回code:200,预期返回code:200
+请求第一页所有id:[56109, 56105, 56101, 56080, 56043, 56037, 56013, 55995, 55988, 55949]
+数据库第一页id:[56109, 56105, 56101, 56080, 56043, 56037, 56013, 55995, 55988, 55949]
+请求返回数据总数:3340
+数据库数据总数:3340
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_3' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_003:错误查询，不存在的手机号【13655555555】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_3' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_3'>通过</button>
+    <div id='div_pt5_3' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_3' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_3'>通过</button>
+    <div id='div_pt5_3' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_3: ******* 正在执行用例 -&gt;query_003 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%13655555555%' or phone like '%13655555555%' ) ORDER BY created_at desc
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_4' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_004:查询全部数据前十条</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_4' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_4'>通过</button>
+    <div id='div_pt5_4' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_4' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_4'>通过</button>
+    <div id='div_pt5_4' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_4: ******* 正在执行用例 -&gt;query_004 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 ORDER BY created_at desc
+请求返回code:200,预期返回code:200
+请求第一页所有id:[56116, 56115, 56109, 56108, 56105, 56101, 56080, 56043, 56037, 56024]
+数据库第一页id:[56116, 56115, 56109, 56108, 56105, 56101, 56080, 56043, 56037, 56024]
+请求返回数据总数:8753
+数据库数据总数:8753
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_5' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_005:查询完整正确姓名【许全书】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_5' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_5'>通过</button>
+    <div id='div_pt5_5' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_5' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_5'>通过</button>
+    <div id='div_pt5_5' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_5: ******* 正在执行用例 -&gt;query_005 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%许全书%' or phone like '%许全书%' ) ORDER BY created_at desc
+请求返回code:200,预期返回code:200
+请求第一页所有id:[55879]
+数据库第一页id:[55879]
+请求返回数据总数:1
+数据库数据总数:1
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_6' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_006:模糊查询_输入姓名【王】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_6' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_6'>通过</button>
+    <div id='div_pt5_6' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_6' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_6'>通过</button>
+    <div id='div_pt5_6' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_6: ******* 正在执行用例 -&gt;query_006 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%王%' or phone like '%王%' ) ORDER BY created_at desc
+请求返回code:200,预期返回code:200
+请求第一页所有id:[55876, 55507, 55444, 55350, 55345, 55265, 55207, 55019, 55009, 54954]
+数据库第一页id:[55876, 55507, 55444, 55350, 55345, 55265, 55207, 55019, 55009, 54954]
+请求返回数据总数:705
+数据库数据总数:705
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='pt5_7' class='hiddenRow'>
+    <td class='passCase' style="vertical-align: middle;"><div class='testcase'>query_007:错误查询，不存在的姓名【王海韬】</div></td>
+    <td colspan='5' align='center'>
+    <!--默认收起错误信息 -Findyou
+    <button id='btn_pt5_7' type="button"  class="btn btn-danger btn-xs collapsed" data-toggle="collapse" data-target='#div_pt5_7'>通过</button>
+    <div id='div_pt5_7' class="collapse">  -->
+
+    <!-- 默认展开错误信息 -Findyou -->
+    <button id='btn_pt5_7' type="button"  class="btn btn-danger btn-xs" data-toggle="collapse" data-target='#div_pt5_7'>通过</button>
+    <div id='div_pt5_7' class="collapse in" style="text-align: left;">
+    <pre>
+    
+pt5_7: ******* 正在执行用例 -&gt;query_007 *********
+执行sql为： SELECT * FROM mf_merchant_user_drugs WHERE 1=1  AND merchant_id = 1 and (name like '%王海韬%' or phone like '%王海韬%' ) ORDER BY created_at desc
+接口返回为空：()
+数据库返回为空：()
+请求返回code:200
+请求返回数据总数:0
+数据库数据总数:0
+
+
+    </pre>
+    </div>
+    </td>
+</tr>
+
+<tr id='total_row' class="text-center active">
+    <td>总计</td>
+    <td>41</td>
+    <td>41</td>
+    <td>0</td>
+    <td>0</td>
+    <td>通过率：100.00%</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+    <div style=" position:fixed;right:50px; bottom:30px; width:20px; height:20px;cursor:pointer">
+    <a href="#"><span class="glyphicon glyphicon-eject" style = "font-size:30px;" aria-hidden="true">
+    </span></a></div>
+    
+
+</body>
+</html>
